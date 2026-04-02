@@ -8,290 +8,288 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
         :root {
-            --bg-deep: #0a0a0a;
-            --bg-content: #0F0F0F;
+            --bg-body: #0F0F0F;
+            --bg-card: #161616;
+            --text-main: #ffffff;
             --gold-gradient: linear-gradient(135deg, #fbf2c6 0%, #d4af37 35%, #b68d40 60%, #fbf2c6 100%);
             --gold-muted: #c5a059;
-            --white: #ffffff;
-            --dark-card: #161616;
-            --transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            --border: rgba(197, 160, 89, 0.15);
+            --menu-bg: rgba(15, 15, 15, 0.9);
+        }
+
+        [data-theme="light"] {
+            --bg-body: #FFF0F3; /* Розоватый фон */
+            --bg-card: #ffffff;
+            --text-main: #1A1A1A;
+            --border: rgba(0, 0, 0, 0.08);
+            --menu-bg: rgba(255, 235, 240, 0.95);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        html { scroll-behavior: smooth; }
-        
-        body { 
-            background-color: var(--bg-content); 
-            font-family: 'Inter', sans-serif; 
-            color: var(--white); 
-            overflow-x: hidden; 
-            line-height: 1.6;
-        }
+        body { background-color: var(--bg-body); font-family: 'Inter', sans-serif; color: var(--text-main); overflow-x: hidden; transition: background 0.5s cubic-bezier(0.4, 0, 0.2, 1); }
 
         /* --- HEADER --- */
         header {
             position: fixed; top: 0; width: 100%; height: 100px;
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 6%; z-index: 2000; transition: var(--transition);
+            padding: 0 6%; z-index: 4000; transition: 0.4s ease;
             background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
         }
-        header.scrolled {
-            height: 70px; background: rgba(10, 10, 10, 0.96);
-            backdrop-filter: blur(15px); border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        header.scrolled { height: 80px; background: var(--bg-body); border-bottom: 1px solid var(--border); backdrop-filter: blur(15px); }
+
+        .bv-logo { display: flex; flex-direction: column; align-items: center; text-decoration: none; -webkit-box-reflect: below -2px linear-gradient(transparent, rgba(255, 255, 255, 0.1)); }
+        .bv-logo span:first-child { font-family: 'Playfair Display'; font-size: 44px; font-weight: 600; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 3px; line-height: 0.9; }
+        .bv-logo span:last-child { font-size: 9px; text-transform: uppercase; letter-spacing: 7px; color: var(--text-main); margin-top: 5px; opacity: 0.8; }
+
+        .nav-desktop { display: flex; gap: 30px; }
+        .nav-desktop a { font-size: 10px; text-transform: uppercase; letter-spacing: 2px; color: inherit; opacity: 0.6; transition: 0.3s; text-decoration: none; }
+        .nav-desktop a:hover { opacity: 1; color: var(--gold-muted); }
+
+        /* Burger Animation */
+        .burger { width: 24px; height: 16px; position: relative; cursor: pointer; z-index: 5001; display: none; }
+        .burger span { display: block; position: absolute; height: 1.5px; width: 100%; background: var(--text-main); transition: .4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .burger span:nth-child(1) { top: 0; }
+        .burger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
+        .burger span:nth-child(3) { bottom: 0; }
+        .burger.open span:nth-child(1) { top: 50%; transform: rotate(45deg); background: var(--gold-muted); }
+        .burger.open span:nth-child(2) { opacity: 0; }
+        .burger.open span:nth-child(3) { top: 50%; transform: rotate(-45deg); background: var(--gold-muted); }
+
+        /* --- MOBILE MENU --- */
+        .side-menu {
+            position: fixed; top: 0; left: -100%; width: 70%; height: 100%;
+            background: var(--menu-bg); z-index: 5000; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            display: flex; flex-direction: column; padding: 140px 40px; gap: 35px;
+            box-shadow: 20px 0 50px rgba(0,0,0,0.3);
+        }
+        .side-menu.active { left: 0; }
+        .side-menu a { font-family: 'Playfair Display'; font-size: 28px; color: var(--text-main); text-decoration: none; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+
+        .menu-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 4500;
+            opacity: 0; visibility: hidden; transition: 0.5s; backdrop-filter: blur(0px);
+        }
+        .menu-overlay.active { opacity: 1; visibility: visible; backdrop-filter: blur(12px); }
+
+        /* --- KINETIC MARQUEE --- */
+        .marquee-wrapper { background: #111; border-bottom: 1px solid var(--border); padding: 30px 0; overflow: hidden; position: relative; cursor: grab; }
+        [data-theme="light"] .marquee-wrapper { background: #fff; }
+        .marquee-track { display: flex; width: max-content; will-change: transform; pointer-events: none; }
+        .marquee-item { font-family: 'Playfair Display'; font-size: 15px; font-style: italic; margin: 0 50px; color: var(--gold-muted); text-transform: uppercase; letter-spacing: 3px; white-space: nowrap; user-select: none; }
+
+        /* --- ART COLLAGE (Masonry) --- */
+        .art-collage { display: grid; grid-template-columns: repeat(6, 1fr); gap: 15px; padding: 120px 4% 60px; max-width: 1600px; margin: 0 auto; }
+        .collage-tile { position: relative; overflow: hidden; background: var(--bg-card); border: 1px solid var(--border); opacity: 0; transform: translateY(40px); transition: 1s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; }
+        .collage-tile.visible { opacity: 1; transform: translateY(0); }
+        .collage-tile img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; transition: 1.5s ease; }
+        .collage-tile:hover img { transform: scale(1.05); }
+
+        /* История */
+        .history-tile { padding: 40px; display: flex; flex-direction: column; justify-content: center; opacity: 0; transform: translateY(40px); transition: 1s; }
+        .history-tile.visible { opacity: 1; transform: translateY(0); }
+        .history-tile p { font-size: 16px; font-weight: 300; line-height: 1.8; color: var(--text-main); }
+        .history-tile b { color: var(--gold-muted); font-family: 'Playfair Display'; font-size: 20px; font-style: italic; display: block; margin-bottom: 10px; }
+
+        /* Grid Setup */
+        .t-rings { grid-column: span 2; grid-row: span 2; height: 600px; }
+        .t-hist-1 { grid-column: span 4; height: auto; }
+        .t-earrings, .t-bracelets { grid-column: span 2; height: 290px; }
+        .t-neck { grid-column: span 2; grid-row: span 2; height: 600px; }
+        .t-hist-2 { grid-column: span 2; grid-row: span 2; background: var(--bg-card); border: 1px solid var(--border); text-align: center; }
+
+        .collage-label { position: absolute; bottom: 20px; left: 20px; font-family: 'Playfair Display'; font-style: italic; font-size: 22px; text-shadow: 0 2px 10px rgba(0,0,0,0.5); color: #fff; }
+        [data-theme="light"] .collage-label { color: var(--text-main); text-shadow: none; }
+
+        /* --- ADAPTIVE --- */
+        @media (max-width: 1024px) {
+            .nav-desktop { display: none; }
+            .burger { display: flex; }
+            .art-collage { grid-template-columns: repeat(2, 1fr); gap: 10px; }
+            .t-rings, .t-neck, .t-hist-2 { grid-column: span 1; grid-row: span 2; height: 400px; }
+            .t-earrings, .t-bracelets { grid-column: span 1; height: 195px; }
+            .t-hist-1 { grid-column: span 2; padding: 20px; }
+            header { height: 90px; padding: 0 4%; }
+            .bv-logo span:first-child { font-size: 34px; }
         }
 
-        .bv-logo {
-            display: flex; flex-direction: column; align-items: center; text-decoration: none;
-            -webkit-box-reflect: below -2px linear-gradient(transparent, rgba(255, 255, 255, 0.1));
-        }
-        .bv-logo span:first-child {
-            font-family: 'Playfair Display', serif; font-size: clamp(28px, 5vw, 42px); font-weight: 500;
-            background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent;
-            letter-spacing: 4px; line-height: 0.8;
-        }
-        header.scrolled .bv-logo span:first-child { font-size: 34px; }
-        .bv-logo span:last-child {
-            font-size: 8px; text-transform: uppercase; letter-spacing: 6px; color: var(--white); margin-top: 5px;
-        }
-
-        .lang-switch { display: flex; gap: 10px; font-size: 10px; }
-        .lang-btn { cursor: pointer; opacity: 0.4; transition: 0.3s; color: white; }
-        .lang-btn.active { opacity: 1; color: var(--gold-muted) !important; font-weight: 600; }
-
-        .burger { width: 24px; height: 10px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; z-index: 2100; }
-        .burger span { width: 100%; height: 1px; background: var(--white); transition: var(--transition); }
-        .burger.open span:nth-child(1) { transform: translateY(4.5px) rotate(45deg); background: var(--gold-muted); }
-        .burger.open span:nth-child(2) { transform: translateY(-4.5px) rotate(-45deg); background: var(--gold-muted); }
-
-        /* --- SIDE MENU --- */
-        .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.7); backdrop-filter: blur(15px); z-index: 1500; opacity: 0; visibility: hidden; transition: 0.5s; }
-        .menu-overlay.active { opacity: 1; visibility: visible; }
-        .side-menu { 
-            position: fixed; top: 0; right: -400px; width: min(380px, 85%); height: 100%; 
-            background: #0d0d0d; z-index: 1600; transition: 0.6s cubic-bezier(0.16, 1, 0.3, 1); 
-            padding: 100px 40px; display: flex; flex-direction: column; border-left: 1px solid rgba(255,255,255,0.05);
-        }
-        .side-menu.active { right: 0; }
-        .side-menu a { font-family: 'Playfair Display'; font-size: 28px; color: var(--white); text-decoration: none; margin: 15px 0; transition: 0.3s; }
-        .side-menu a:hover { color: var(--gold-muted); padding-left: 10px; }
-
-        /* --- HERO --- */
-        .hero { position: relative; width: 100%; height: 85vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
-        .hero-bg {
-            position: absolute; inset: 0;
-            background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.8)), 
-                        url('https://images.unsplash.com/photo-1573408301185-9146fe634ad0?q=80&w=1920&auto=format&fit=crop');
-            background-size: cover; background-position: center; 
-            transform: scale(1.15); transition: 4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        body.loaded .hero-bg { transform: scale(1.05); }
-
-        .hero-content h1 {
-            position: relative; font-family: 'Playfair Display', serif; font-size: clamp(40px, 10vw, 100px);
-            font-weight: 400; letter-spacing: 5px; text-transform: uppercase; color: white;
-            text-shadow: 0 10px 40px rgba(0,0,0,0.6);
-            opacity: 0; transform: translateY(30px); transition: 2s cubic-bezier(0.16, 1, 0.3, 1) 0.5s;
-        }
-        body.loaded .hero-content h1 { opacity: 1; transform: translateY(0); }
-
-        /* --- DRAGGABLE MARQUEE --- */
-        .marquee-wrapper { background: #111; border-bottom: 1px solid rgba(255,255,255,0.05); padding: 22px 0; overflow: hidden; position: relative; cursor: grab; }
-        .marquee-wrapper:active { cursor: grabbing; }
-        .marquee-track { display: flex; width: max-content; }
-        .marquee-track.animating { animation: marquee-scroll 45s linear infinite; }
-        .marquee-wrapper:hover .marquee-track.animating { animation-play-state: paused; }
-        .marquee-item { font-family: 'Playfair Display'; font-size: 13px; font-style: italic; margin: 0 40px; color: var(--gold-muted); text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; text-decoration: none; transition: 0.3s; }
-        @keyframes marquee-scroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-        /* --- PRODUCT CARDS --- */
-        .product-card { background: var(--dark-card); border: 1px solid rgba(255,255,255,0.03); transition: var(--transition); position: relative; overflow: hidden; }
-        .product-card:hover { transform: translateY(-10px); border-color: var(--gold-muted); }
-        .quick-view-btn { position: absolute; bottom: -50px; left: 0; width: 100%; padding: 12px; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); color: var(--gold-muted); text-transform: uppercase; font-size: 9px; font-weight: 600; text-align: center; transition: 0.4s ease; }
-        .product-card:hover .quick-view-btn { bottom: 0; }
-
-        /* --- SCROLL HINT --- */
-        .scroll-hint { position: absolute; bottom: 35px; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; z-index: 10; cursor: pointer; }
-        .scroll-line { width: 1px; height: 45px; background: rgba(255,255,255,0.2); position: relative; overflow: hidden; }
-        .scroll-line::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--gold-muted); animation: scrollDown 2s infinite; }
-        @keyframes scrollDown { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
-
-        /* --- MOBILE GRID (3 IN ROW) --- */
-        @media (max-width: 640px) {
-            .mobile-grid-3 { grid-template-columns: repeat(3, 1fr) !important; gap: 6px !important; }
-            .product-card { padding: 8px !important; }
-            .product-card h3 { font-size: 8px !important; margin-bottom: 2px !important; }
-            .product-card p { display: none; }
-            .product-card span { font-size: 9px !important; }
-            .quick-view-btn { display: none; }
-            .catalog-section { padding: 40px 10px !important; }
-        }
+        /* --- FOOTER --- */
+        footer { padding: 100px 6% 40px; background: var(--bg-card); border-top: 1px solid var(--border); }
+        .contact-icon { width: 22px; height: 22px; fill: var(--gold-muted); transition: 0.3s; }
+        .contact-icon:hover { fill: var(--text-main); transform: scale(1.1); }
     </style>
 </head>
-<body>
+<body class="antialiased">
+
+    <div class="menu-overlay" id="overlay"></div>
 
     <header id="header">
+        <div class="burger" id="burger"><span></span><span></span><span></span></div>
+
+        <nav class="nav-desktop">
+            <a href="#home" data-i18n="m1">Главная</a>
+            <a href="#art-collage" data-i18n="m2">Коллекции</a>
+        </nav>
+
         <a href="#home" class="bv-logo">
-            <span>BV</span>
-            <span>jewelry</span>
+            <span>BV</span><span>jewelry</span>
         </a>
+
         <div class="header-right flex items-center gap-6">
-            <div class="lang-switch">
+            <nav class="nav-desktop">
+                <a href="#footer" data-i18n="m4">Контакты</a>
+            </nav>
+            <div id="themeToggle" class="cursor-pointer hover:rotate-12 transition-transform">
+                <svg width="20" height="20" fill="var(--gold-muted)" viewBox="0 0 24 24"><path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-3.03 0-5.5-2.47-5.5-5.5 0-1.82.89-3.42 2.26-4.4-.44-.06-.9-.1-1.36-.1z"/></svg>
+            </div>
+            <div class="lang-switch text-[10px] flex gap-3">
                 <span class="lang-btn active" data-lang="ru">RU</span>
                 <span class="lang-btn" data-lang="ua">UA</span>
-                <span class="lang-btn" data-lang="en">EN</span>
             </div>
-            <div class="burger" id="burger"><span></span><span></span></div>
         </div>
     </header>
 
-    <div class="menu-overlay" id="overlay"></div>
-    <nav class="side-menu" id="menu">
+    <nav class="side-menu" id="sideMenu">
         <a href="#home" data-i18n="m1">Главная</a>
-        <a href="#heritage" data-i18n="m2">О нас</a>
-        <a href="#catalog" data-i18n="m3">Коллекции</a>
+        <a href="#art-collage" data-i18n="m2">Коллекции</a>
         <a href="#footer" data-i18n="m4">Контакты</a>
     </nav>
 
-    <section class="hero" id="home">
-        <div class="hero-bg" id="heroBg"></div>
-        <div class="hero-content"><h1>BV Jewelry</h1></div>
-        <div class="scroll-hint" onclick="document.getElementById('catalog').scrollIntoView({behavior:'smooth'})">
-            <div class="scroll-line"></div>
-        </div>
+    <section class="h-[85vh] flex items-center justify-center relative overflow-hidden" id="home">
+        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1920')] bg-cover bg-center opacity-60"></div>
+        <h1 class="font-['Playfair_Display'] text-white text-6xl md:text-9xl uppercase tracking-widest relative z-10">BV JEWELRY</h1>
     </section>
 
     <div class="marquee-wrapper" id="marqueeWrapper">
-        <div class="marquee-track animating" id="marqueeTrack"></div>
+        <div class="marquee-track" id="marqueeTrack"></div>
     </div>
 
-    <section class="catalog-section py-20 px-6 md:px-12 max-w-[1700px] mx-auto" id="catalog">
-        <div class="grid grid-cols-2 md:grid-cols-4 mobile-grid-3 gap-8" id="productGrid"></div>
-    </section>
+    <section class="art-collage" id="art-collage">
+        <div class="collage-tile t-rings" onclick="location.href='#rings'">
+            <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=800">
+            <div class="collage-label" data-i18n="c1">Перстни</div>
+        </div>
 
-    <section class="py-32 bg-[#0a0a0a] border-y border-white/5" id="heritage">
-        <div class="max-w-4xl mx-auto px-6 text-center">
-            <h2 class="font-['Playfair_Display'] text-4xl mb-12 italic text-[#C5A059]" data-i18n="h_title">Heritage & Craft</h2>
-            <div class="space-y-10 text-lg font-light leading-relaxed text-gray-400">
-                <p data-i18n="h_p1">Семейная ювелирная мастерская с историей, берущей начало в 1984 году. Именно тогда отец-основатель, мастер классической ювелирной школы, заложил фундамент будущего дела.</p>
-                
-                <div class="flex justify-center gap-6 md:gap-16 py-8 border-y border-white/5">
-                    <div class="text-center">
-                        <span class="block text-2xl font-['Playfair_Display'] text-white">1984</span>
-                        <p class="text-[10px] uppercase tracking-widest text-gray-600 mt-2" data-i18n="h_t1">Основание</p>
-                    </div>
-                    <div class="text-center">
-                        <span class="block text-2xl font-['Playfair_Display'] text-white">2002</span>
-                        <p class="text-[10px] uppercase tracking-widest text-gray-600 mt-2">Е. Бондаренко</p>
-                    </div>
-                    <div class="text-center">
-                        <span class="block text-2xl font-['Playfair_Display'] text-white">2013</span>
-                        <p class="text-[10px] uppercase tracking-widest text-gray-600 mt-2">В. Воронцов</p>
-                    </div>
-                </div>
+        <div class="t-hist-1 history-tile">
+            <p data-i18n="h1"><b>Est. 1984</b> Семейная ювелирная мастерская с историей, берущей начало в 1984 году. Именно тогда отец-основатель заложил фундамент будущего дела.</p>
+        </div>
 
-                <p data-i18n="h_p2">Сегодня BV Jewelry — это сочетание наследия, ручной работы и современного подхода. Каждое изделие — результат точности, опыта и безупречного вкуса.</p>
-                <p class="font-medium text-white italic text-xl md:text-2xl" data-i18n="h_p3">Мы не просто создаем украшения — мы формируем семейные ценности в золоте.</p>
-            </div>
+        <div class="collage-tile t-earrings" onclick="location.href='#earrings'">
+            <img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=800">
+            <div class="collage-label" data-i18n="c2">Серьги</div>
+        </div>
+
+        <div class="collage-tile t-bracelets" onclick="location.href='#bracelets'">
+            <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=800">
+            <div class="collage-label" data-i18n="c3">Браслеты</div>
+        </div>
+
+        <div class="collage-tile t-neck" onclick="location.href='#necklaces'">
+            <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800">
+            <div class="collage-label" data-i18n="c4">Колье</div>
+        </div>
+
+        <div class="t-hist-2 history-tile">
+            <p data-i18n="h2" class="mb-6">В 2002 году традиции продолжил Евгений Бондаренко, в 2013 — к нему присоединился Владимир Воронцов.</p>
+            <p data-i18n="h3" class="italic text-white">Мы не просто создаем украшения - мы формируем семейные ценности в золоте.</p>
+        </div>
+
+        <div class="collage-tile" onclick="location.href='#wedding'">
+            <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=800">
+            <div class="collage-label" data-i18n="c5">Обручальные</div>
+        </div>
+        
+        <div class="collage-tile" onclick="location.href='#mens'">
+            <img src="https://images.unsplash.com/photo-1617038220319-276d3cfab638?q=80&w=800">
+            <div class="collage-label" data-i18n="c6">Подвески</div>
         </div>
     </section>
 
-    <footer class="py-24 px-6 bg-[#050505]" id="footer">
-        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-12 text-center md:text-left">
-            <div class="bv-logo"><span>BV</span><span>jewelry</span></div>
-            <div class="flex flex-col md:items-end gap-6">
-                <a href="tel:+380634540901" class="text-2xl font-['Playfair_Display'] text-white hover:text-[#C5A059] transition-colors tracking-wider">+38 063 45 40 901</a>
-                <div class="flex gap-10 text-[11px] uppercase tracking-widest text-gray-500">
-                    <a href="https://t.me/bv_jewelry_izmail" target="_blank" class="hover:text-white transition-all">Telegram</a>
-                    <a href="https://www.instagram.com/bv.jewelry_izmail" target="_blank" class="hover:text-white transition-all">Instagram</a>
+    <footer id="footer">
+        <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
+            <div class="flex flex-col items-center md:items-start text-center md:text-left">
+                <div class="bv-logo mb-8"><span>BV</span><span>jewelry</span></div>
+                <p class="text-xs text-gray-500 max-w-xs font-light leading-relaxed" data-i18n="f_desc">Официальное ателье по изготовлению ювелирных изделий высшей категории сложности. Традиции с 1984 года.</p>
+            </div>
+            <div class="flex flex-col items-center md:items-end gap-6">
+                <a href="tel:+380634540901" class="flex items-center gap-3 text-current hover:text-[#C5A059] transition-all no-underline">
+                    <svg class="contact-icon" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                    <span class="text-xl md:text-2xl font-['Playfair_Display']">+38 063 45 40 901</span>
+                </a>
+                <div class="flex gap-10 mt-4">
+                    <a href="https://t.me/bv_jewelry_izmail" target="_blank" class="group"><svg class="contact-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.45-.42-1.39-.89.03-.24.37-.48 1.02-.73 4-1.74 6.67-2.88 8.01-3.41 3.81-1.52 4.6-1.78 5.12-1.79.11 0 .37.03.54.17.14.12.18.28.2.4.02.07.02.15.02.24z"/></svg></a>
+                    <a href="https://www.instagram.com/bv.jewelry_izmail" target="_blank" class="group"><svg class="contact-icon" viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6m4.4 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9m0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5m4.75-1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5z"/></svg></a>
                 </div>
             </div>
         </div>
     </footer>
 
     <script>
-        const i18n = {
-            ru: { 
-                m1: "Главная", m2: "О нас", m3: "Коллекции", m4: "Контакты", 
-                h_title: "Наше Наследие", h_t1: "Основание",
-                h_p1: "Семейная ювелирная мастерская с историей, берущей начало в 1984 году. Именно тогда отец-основатель, мастер классической ювелирной школы, заложил фундамент будущего дела.",
-                h_p2: "Сегодня традиции продолжают Евгений Бондаренко и Владимир Воронцов. Каждое изделие — результат точности, опыта и безупречного вкуса.",
-                h_p3: "Мы не просто создаем украшения — мы формируем семейные ценности в золоте.",
-                disc: "открыть", cats: ["Кольца", "Подвески", "Браслеты", "Обручальные кольца", "Серьги", "Мужская коллекция"] 
-            },
-            ua: { 
-                m1: "Головна", m2: "Про нас", m3: "Колекції", m4: "Контакти", 
-                h_title: "Наша Спадщина", h_t1: "Заснування",
-                h_p1: "Сімейна ювелірна майстерня з історією з 1984 року. Саме тоді батько-засновник заклав фундамент майбутньої справи.",
-                h_p2: "Сьогодні традиції продовжують Євген Бондаренко та Володимир Воронцов. Кожен виріб — результат точності, досвіду та бездоганного смаку.",
-                h_p3: "Ми не просто створюємо прикраси — ми формуємо сімейні цінності у золоті.",
-                disc: "відкрити", cats: ["Каблучки", "Підвіски", "Браслети", "Обручки", "Сережки", "Чоловіча колекція"] 
-            },
-            en: { 
-                m1: "Home", m2: "About", m3: "Collections", m4: "Contacts", 
-                h_title: "Our Heritage", h_t1: "Foundation",
-                h_p1: "A family jewelry workshop with a history dating back to 1984. It was then that the founding father laid the foundation.",
-                h_p2: "Today the traditions are continued by E. Bondarenko and V. Vorontsov. Each piece is a result of precision and taste.",
-                h_p3: "We don't just create jewelry — we shape family values in gold.",
-                disc: "discover", cats: ["Rings", "Pendants", "Bracelets", "Wedding Rings", "Earrings", "Men's Collection"] 
-            }
-        };
-
         const burger = document.getElementById('burger');
-        const menu = document.getElementById('menu');
+        const sideMenu = document.getElementById('sideMenu');
         const overlay = document.getElementById('overlay');
-        const header = document.getElementById('header');
+        const themeToggle = document.getElementById('themeToggle');
         const track = document.getElementById('marqueeTrack');
         const wrapper = document.getElementById('marqueeWrapper');
 
+        // Logic
         function toggleMenu() {
-            burger.classList.toggle('open'); menu.classList.toggle('active'); overlay.classList.toggle('active');
-            document.body.style.overflow = menu.classList.contains('active') ? 'hidden' : 'auto';
+            burger.classList.toggle('open');
+            sideMenu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = sideMenu.classList.contains('active') ? 'hidden' : 'auto';
         }
-        burger.onclick = toggleMenu; overlay.onclick = toggleMenu;
+        burger.onclick = (e) => { e.stopPropagation(); toggleMenu(); };
+        overlay.onclick = (e) => { e.preventDefault(); e.stopPropagation(); toggleMenu(); };
+        sideMenu.onclick = (e) => { if(e.target.tagName === 'A') toggleMenu(); else { e.stopPropagation(); toggleMenu(); } };
+
+        themeToggle.onclick = () => {
+            const current = document.documentElement.getAttribute('data-theme');
+            document.documentElement.setAttribute('data-theme', current === 'light' ? 'dark' : 'light');
+        };
+
+        // Kinetic Marquee
+        let scrollPos = 0, velocity = 0.5;
+        function updateMarquee() {
+            scrollPos -= velocity;
+            if (Math.abs(scrollPos) >= track.offsetWidth / 2) scrollPos = 0;
+            track.style.transform = `translateX(${scrollPos}px)`;
+            if (Math.abs(velocity) > 0.5) velocity *= 0.98; else velocity = 0.5;
+            requestAnimationFrame(updateMarquee);
+        }
+        wrapper.onmousemove = (e) => velocity = (e.movementX * 0.4) + (velocity > 0 ? 0.5 : -0.5);
+        let touchStart = 0;
+        wrapper.ontouchstart = (e) => touchStart = e.touches[0].clientX;
+        wrapper.ontouchmove = (e) => {
+            const touchDelta = e.touches[0].clientX - touchStart;
+            velocity = touchDelta * 0.2;
+            touchStart = e.touches[0].clientX;
+        };
+
+        // Lang
+        const i18n = {
+            ru: { m1: "Главная", m2: "Коллекции", m4: "Контакты", c1: "Перстни", c2: "Серьги", c3: "Браслеты", c4: "Колье", c5: "Обручальные", c6: "Подвески", h1: "Семейная ювелирная мастерская с историей с 1984 года. Отец-основатель заложил фундамент нашего дела.", h2: "В 2002 году традиции продолжил Евгений Бондаренко, в 2013 — к нему присоединился Владимир Воронцов.", h3: "Мы не просто создаем украшения - мы формируем семейные ценности в золоте.", f_desc: "Официальное ателье по изготовлению ювелирных изделий высшей категории сложности. Традиции с 1984 года.", cats: ["Кольца", "Серьги", "Браслеты", "Колье", "Крестики"] },
+            ua: { m1: "Головна", m2: "Колекції", m4: "Контакти", c1: "Персні", c2: "Сережки", c3: "Браслети", c4: "Кольє", c5: "Обручки", c6: "Підвіски", h1: "Сімейна ювелірна майстерня з історією з 1984 року. Засновник заклав фундамент нашої справи.", h2: "У 2002 році справу продовжив Євген Бондаренко, у 2013 — Володимир Воронцов.", h3: "Ми не просто створюємо прикраси - ми формуємо сімейні цінності у золоті.", f_desc: "Офіційне ательє з виготовлення ювелірних виробів вищої категорії складності. Традиції з 1984 року.", cats: ["Каблучки", "Сережки", "Браслети", "Кольє", "Хрестики"] }
+        };
 
         function setLang(lang) {
             document.querySelectorAll('[data-i18n]').forEach(el => el.innerHTML = i18n[lang][el.dataset.i18n]);
             document.querySelectorAll('.lang-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.lang === lang));
-            const cats = i18n[lang].cats;
-            track.innerHTML = [...cats, ...cats].map(cat => `<a href="#catalog" class="marquee-item">${cat}</a>`).join('');
+            track.innerHTML = [...i18n[lang].cats, ...i18n[lang].cats, ...i18n[lang].cats].map(cat => `<span class="marquee-item">${cat}</span>`).join('');
             localStorage.setItem('bv_lang', lang);
         }
 
-        // Drag Logic
-        let isDown = false; let startX;
-        wrapper.addEventListener('mousedown', (e) => { isDown = true; track.classList.remove('animating'); startX = e.pageX - track.offsetLeft; });
-        wrapper.addEventListener('mouseup', () => { isDown = false; track.classList.add('animating'); });
-        wrapper.addEventListener('mouseleave', () => { isDown = false; track.classList.add('animating'); });
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+        }, { threshold: 0.1 });
+        document.querySelectorAll('.collage-tile, .history-tile').forEach(el => observer.observe(el));
 
-        // Generate Grid
-        const grid = document.getElementById('productGrid');
-        for (let i = 1; i <= 12; i++) {
-            grid.innerHTML += `
-                <div class="product-card p-6 flex flex-col h-full opacity-0 translate-y-10" style="animation: fadeInUp 1s forwards ${0.1 * i}s">
-                    <div class="relative overflow-hidden mb-6 aspect-[1/1] bg-[#111]">
-                        <img src="https://images.pexels.com/photos/1458867/pexels-photo-1458867.jpeg?auto=compress&w=400" class="w-full h-full object-cover opacity-70">
-                        <button class="quick-view-btn">Подробнее</button>
-                    </div>
-                    <div class="flex-grow">
-                        <h3 class="font-semibold text-sm uppercase tracking-tight mb-2">Piece №${i}</h3>
-                        <p class="text-[10px] text-gray-500 uppercase tracking-widest mb-4">Gold 585 • Diamonds</p>
-                    </div>
-                    <span class="text-[#C5A059] font-medium text-lg">${(14000 + i*150).toLocaleString()} грн</span>
-                </div>`;
-        }
-
-        window.onload = () => { document.body.classList.add('loaded'); setLang(localStorage.getItem('bv_lang') || 'ru'); };
-        window.onscroll = () => header.classList.toggle('scrolled', window.pageYOffset > 50);
+        window.onload = () => { setLang(localStorage.getItem('bv_lang') || 'ru'); updateMarquee(); };
+        window.onscroll = () => document.getElementById('header').classList.toggle('scrolled', window.pageYOffset > 50);
         document.querySelectorAll('.lang-btn').forEach(btn => btn.onclick = () => setLang(btn.dataset.lang));
     </script>
-
-    <style>
-        @keyframes fadeInUp { to { opacity: 1; transform: translateY(0); } }
-    </style>
 </body>
 </html>
