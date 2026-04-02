@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BV-jevelry | Workshop</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@100;300;500&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --gold: #c5a059;
+            --white: #ffffff;
+            --bg-dark: #121212;
+            --bg-card: #1a1a1a;
+            --transition: all 0.8s cubic-bezier(0.19, 1, 0.22, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
+        html { scroll-behavior: smooth; }
+
+        body {
+            background-color: var(--bg-dark);
+            font-family: 'Montserrat', sans-serif;
+            color: var(--white);
+            overflow-x: hidden;
+        }
+
+        /* Шапка */
+        header {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 6%;
+            z-index: 2000;
+            transition: var(--transition);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.6) 0%, transparent 100%);
+        }
+
+        header.scrolled {
+            height: 80px;
+            background: rgba(18, 18, 18, 0.9);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+        }
+
+        .logo { display: flex; flex-direction: column; text-decoration: none; color: var(--white); }
+        .logo span:first-child { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 5vw, 36px); letter-spacing: 5px; font-weight: 600; }
+        .logo span:last-child { font-size: 10px; text-transform: lowercase; letter-spacing: 7px; color: var(--gold); margin-top: 2px; }
+
+        .burger { width: 32px; height: 14px; display: flex; flex-direction: column; justify-content: space-between; cursor: pointer; z-index: 2100; }
+        .burger span { width: 100%; height: 1px; background: var(--white); transition: var(--transition); }
+        .burger.open span:nth-child(1) { transform: translateY(6.5px) rotate(45deg); background: var(--gold); }
+        .burger.open span:nth-child(2) { transform: translateY(-6.5px) rotate(-45deg); background: var(--gold); }
+
+        /* Hero */
+        .hero { position: relative; width: 100%; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+        .hero-bg {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(rgba(0,0,0,0.3), rgba(0,0,0,0.5)), 
+                        url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=2070&auto=format&fit=crop');
+            background-size: cover; background-position: center;
+            transform: scale(1.1); transition: transform 3s ease-out;
+        }
+
+        .hero-content { position: relative; text-align: center; z-index: 2; }
+        .hero-content .subtitle {
+            font-size: clamp(10px, 2vw, 12px); text-transform: uppercase; letter-spacing: 6px; color: var(--white);
+            margin-bottom: 20px; display: inline-block; padding: 8px 20px;
+            background: rgba(255, 255, 255, 0.05); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1); opacity: 0; animation: fadeIn 1.5s forwards 0.5s;
+        }
+        .hero-content h1 {
+            font-family: 'Cormorant Garamond', serif; font-size: clamp(38px, 10vw, 85px); font-weight: 300;
+            letter-spacing: 12px; text-transform: uppercase; text-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            opacity: 0; transform: translateY(40px); animation: fadeUp 1.8s forwards 0.8s;
+        }
+
+        .scroll-indicator {
+            position: absolute; bottom: 40px; left: 50%; transform: translateX(-50%);
+            display: flex; flex-direction: column; align-items: center; cursor: pointer;
+            z-index: 10; transition: 0.3s;
+        }
+        .scroll-indicator p { font-size: 9px; text-transform: uppercase; letter-spacing: 3px; color: var(--gold); margin-bottom: 10px; opacity: 0.8; }
+        .mouse { width: 1px; height: 60px; background: rgba(197, 160, 89, 0.3); position: relative; overflow: hidden; }
+        .mouse::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: var(--gold); animation: scroll-anim 2s infinite; }
+
+        @keyframes scroll-anim { 0% { transform: translateY(-100%); } 100% { transform: translateY(100%); } }
+
+        /* Меню */
+        .full-menu {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+            background: rgba(18, 18, 18, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            z-index: 1500; clip-path: circle(0% at 93% 5%); transition: clip-path 0.8s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+        .full-menu.active { clip-path: circle(150% at 93% 5%); }
+        .full-menu a { font-family: 'Cormorant Garamond', serif; font-size: clamp(28px, 6vw, 45px); color: var(--white); text-decoration: none; margin: 10px 0; font-weight: 300; transition: 0.4s; }
+        .full-menu a:hover { color: var(--gold); }
+        .menu-footer { margin-top: 40px; display: flex; gap: 20px; font-size: 12px; letter-spacing: 2px; }
+        .menu-footer a { font-size: 14px; font-family: 'Montserrat'; color: var(--gold); }
+
+        /* Каталог */
+        .catalog { padding: 120px 6%; background-color: var(--bg-dark); }
+        .catalog-title { font-family: 'Cormorant Garamond', serif; font-size: 42px; text-align: center; margin-bottom: 60px; font-weight: 300; letter-spacing: 5px; color: var(--gold); }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 40px; }
+        .product-card { background: #161616; border: 1px solid rgba(255,255,255,0.03); padding-bottom: 30px; transition: var(--transition); position: relative; overflow: hidden; }
+        .product-card:hover { border-color: rgba(197, 160, 89, 0.3); transform: translateY(-10px); }
+        .product-img { width: 100%; aspect-ratio: 1/1; background: #000; display: flex; align-items: center; justify-content: center; color: #333; font-size: 10px; letter-spacing: 2px; }
+        .product-info { padding: 25px; text-align: center; }
+        .product-info h3 { font-family: 'Cormorant Garamond', serif; font-size: 24px; font-weight: 400; margin-bottom: 10px; letter-spacing: 2px; }
+        .product-info p { font-size: 12px; color: #888; text-transform: uppercase; letter-spacing: 2px; }
+        .product-price { margin-top: 15px; color: var(--gold); font-weight: 300; font-size: 16px; }
+
+        /* Контакты / Footer */
+        .contacts { padding: 100px 6%; border-top: 1px solid rgba(197, 160, 89, 0.1); text-align: center; background: #0f0f0f; }
+        .contacts h2 { font-family: 'Cormorant Garamond', serif; font-size: 36px; color: var(--gold); margin-bottom: 40px; font-weight: 300; letter-spacing: 4px; }
+        .contact-item { margin-bottom: 30px; }
+        .contact-item p { font-size: 10px; text-transform: uppercase; letter-spacing: 4px; color: #555; margin-bottom: 10px; }
+        .contact-link { font-family: 'Cormorant Garamond', serif; font-size: 28px; color: var(--white); text-decoration: none; transition: 0.3s; }
+        .contact-link:hover { color: var(--gold); }
+        
+        .social-links { display: flex; justify-content: center; gap: 40px; margin-top: 50px; }
+        .social-links a { font-size: 12px; text-transform: uppercase; letter-spacing: 3px; color: var(--gold); text-decoration: none; border-bottom: 1px solid transparent; transition: 0.3s; padding-bottom: 5px; }
+        .social-links a:hover { border-bottom: 1px solid var(--gold); }
+
+        .copyright { margin-top: 80px; font-size: 9px; text-transform: uppercase; letter-spacing: 2px; color: #333; }
+
+        @keyframes fadeUp { to { opacity: 1; transform: translateY(0); } }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <header id="header">
+        <a href="#home" class="logo">
+            <span>BV-jevelry</span>
+            <span>workshop</span>
+        </a>
+        <div class="burger" id="burger">
+            <span></span>
+            <span></span>
+        </div>
+    </header>
+
+    <nav class="full-menu" id="menu">
+        <a href="#home">Главная</a>
+        <a href="#catalog">Коллекции</a>
+        <a href="#contacts">Контакты</a>
+        <div class="menu-footer">
+            <a href="https://t.me/bv_jewelry_izmail" target="_blank">Telegram</a>
+            <a href="https://www.instagram.com/bv.jewelry_izmail" target="_blank">Instagram</a>
+        </div>
+    </nav>
+
+    <section class="hero" id="home">
+        <div class="hero-bg" id="heroBg"></div>
+        <div class="hero-content">
+            <div class="subtitle">Handcrafted in Odesa</div>
+            <h1>BV-jevelry</h1>
+        </div>
+        <div class="scroll-indicator" id="scrollBtn">
+            <p>discover</p>
+            <div class="mouse"></div>
+        </div>
+    </section>
+
+    <section class="catalog" id="catalog">
+        <h2 class="catalog-title">Exquisite Collection</h2>
+        <div class="product-grid">
+            <div class="product-card">
+                <div class="product-img">PRODUCT IMAGE</div>
+                <div class="product-info">
+                    <h3>Кольцо "Aura"</h3>
+                    <p>Белое золото & Бриллианты</p>
+                    <div class="product-price">По запросу</div>
+                </div>
+            </div>
+            <div class="product-card">
+                <div class="product-img">PRODUCT IMAGE</div>
+                <div class="product-info">
+                    <h3>Браслет "Flow"</h3>
+                    <p>Желтое золото 750°</p>
+                    <div class="product-price">32 000 грн</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="contacts" id="contacts">
+        <h2>Inquiry & Service</h2>
+        
+        <div class="contact-item">
+            <p>Personal Consultation</p>
+            <a href="tel:+380634540901" class="contact-link">+38 063 45 40 901</a>
+        </div>
+
+        <div class="social-links">
+            <a href="https://t.me/bv_jewelry_izmail" target="_blank">Telegram</a>
+            <a href="https://www.instagram.com/bv.jewelry_izmail?igsh=MW90d3hzbzkzZGVrZg==" target="_blank">Instagram</a>
+        </div>
+
+        <div class="copyright">
+            © 2026 BV-jevelry. Created for Excellence.
+        </div>
+    </section>
+
+    <script>
+        const burger = document.getElementById('burger');
+        const menu = document.getElementById('menu');
+        const header = document.getElementById('header');
+        const heroBg = document.getElementById('heroBg');
+        const scrollBtn = document.getElementById('scrollBtn');
+
+        window.onload = () => { heroBg.style.transform = 'scale(1)'; };
+
+        function toggleMenu() {
+            burger.classList.toggle('open');
+            menu.classList.toggle('active');
+            document.body.style.overflow = menu.classList.contains('active') ? 'hidden' : 'auto';
+        }
+
+        burger.addEventListener('click', (e) => { e.stopPropagation(); toggleMenu(); });
+        menu.addEventListener('click', (e) => { if (e.target === menu) toggleMenu(); });
+        document.querySelectorAll('.full-menu a').forEach(link => { link.addEventListener('click', toggleMenu); });
+
+        scrollBtn.addEventListener('click', () => {
+            document.getElementById('catalog').scrollIntoView({ behavior: 'smooth' });
+        });
+
+        window.addEventListener('scroll', () => {
+            let offset = window.pageYOffset;
+            if (offset > 50) { header.classList.add('scrolled'); } 
+            else { header.classList.remove('scrolled'); }
+            if (offset < window.innerHeight) {
+                heroBg.style.transform = `scale(${1 + offset * 0.0002}) translateY(${offset * 0.15}px)`;
+            }
+        });
+    </script>
+</body>
+</html>
