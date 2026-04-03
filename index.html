@@ -154,10 +154,6 @@
 </head>
 <body>
 
-    <audio id="bgMusic" loop>
-        <source src="https://cdn.pixabay.com/download/audio/2022/01/18/audio_d0a13f69d2.mp3" type="audio/mpeg">
-    </audio>
-
     <div class="menu-overlay" id="overlay"></div>
 
     <header id="header">
@@ -315,40 +311,6 @@
     </footer>
 
     <script>
-        // Инициализация фоновой музыки по первому клику (требование браузеров)
-        let musicStarted = false;
-        document.body.addEventListener('click', () => {
-            if(!musicStarted) {
-                const bgMusic = document.getElementById('bgMusic');
-                bgMusic.volume = 0.02; // Очень тихо
-                bgMusic.play().catch(e => console.log('Autoplay prevented by browser'));
-                musicStarted = true;
-            }
-        });
-
-        // Синтез звука тиканья механизма (Web Audio API)
-        let audioCtx;
-        function playTick() {
-            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-            if (audioCtx.state === 'suspended') audioCtx.resume();
-            
-            const osc = audioCtx.createOscillator();
-            const gain = audioCtx.createGain();
-            
-            osc.type = 'triangle'; // Металлический оттенок
-            osc.frequency.setValueAtTime(1200, audioCtx.currentTime); // Высокий старт
-            osc.frequency.exponentialRampToValueAtTime(400, audioCtx.currentTime + 0.03); // Резкий спад
-            
-            gain.gain.setValueAtTime(0.04, audioCtx.currentTime); // Тихий щелчок
-            gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + 0.03);
-            
-            osc.connect(gain);
-            gain.connect(audioCtx.destination);
-            
-            osc.start();
-            osc.stop(audioCtx.currentTime + 0.03);
-        }
-
         const i18n = {
             uk: { m1: "Головна", m2: "Каталог", m4: "Контакти", m_order: "Замовити", c1: "Персні", c2: "Сережки", c3: "Браслети", c4: "Кольє", c5: "Обручки", c6: "Хрестики", float_btn: "Написати нам", f_addr: "Ізмаїл: Торгова, 68 • Покровська, 57", f_desc: "Ювелірне ательє вищої категорії складності. Традиції якості з 1984 року.", cats: ["Каблучки", "Сережки", "Браслети", "Кольє", "Хрестики"] },
             en: { m1: "Home", m2: "Catalog", m4: "Contacts", m_order: "Order", c1: "Rings", c2: "Earrings", c3: "Bracelets", c4: "Necklaces", c5: "Wedding Bands", c6: "Crosses", float_btn: "Message us", f_addr: "Izmail: Torgova, 68 • Pokrovska, 57", f_desc: "High-end jewelry atelier. Traditions of quality since 1984.", cats: ["Rings", "Earrings", "Bracelets", "Necklaces", "Crosses"] },
@@ -423,27 +385,14 @@
             }
         };
 
-        // --- ОБНОВЛЕННАЯ ЛОГИКА КАРУСЕЛИ ---
-        let scrollPos = 0, velocity = 0.5, targetVelocity = 0.5;
-        let lastTickTime = 0;
-
-        function triggerTick(speed) {
-            const now = Date.now();
-            const threshold = Math.max(40, 200 - Math.abs(speed) * 15); 
-            if (now - lastTickTime > threshold && Math.abs(speed) > 0.8) {
-                playTick();
-                lastTickTime = now;
-            }
-        }
+        // --- ОБНОВЛЕННАЯ ЛОГИКА КАРУСЕЛИ (Без фоновой скорости) ---
+        let scrollPos = 0, velocity = 0, targetVelocity = 0;
 
         function updateMarquee() {
             scrollPos -= velocity;
             
-            // Расчет ширины одного полного блока категорий (чтобы делать бесшовный луп)
-            // У нас 4 одинаковых блока отрендерено, значит 1 блок это 1/4 общей ширины
             const singleSetWidth = track.scrollWidth / 4;
             
-            // Бесшовная прокрутка в обе стороны
             if (scrollPos <= -singleSetWidth) {
                 scrollPos += singleSetWidth;
             } else if (scrollPos > 0) {
@@ -452,53 +401,47 @@
             
             track.style.transform = `translateX(${scrollPos}px)`;
             
-            // Инерция
-            velocity += (targetVelocity - velocity) * 0.08;
-            if (Math.abs(targetVelocity) > 0.5) {
-                targetVelocity *= 0.95; 
-            }
+            // Плавное возвращение к нулевой скорости (инерция)
+            velocity += (targetVelocity - velocity) * 0.08; 
             
-            // Тиканье по инерции при быстром вращении
-            if (Math.abs(velocity) > 1.5) {
-                triggerTick(velocity);
+            // Постепенное затухание скорости (торможение)
+            targetVelocity *= 0.92; 
+
+            // Полная остановка, если скорость микроскопическая, чтобы не грузить процессор
+            if (Math.abs(velocity) < 0.01 && Math.abs(targetVelocity) < 0.01) {
+                velocity = 0;
+                targetVelocity = 0;
             }
 
             requestAnimationFrame(updateMarquee);
         }
 
-        // Прокрутка колесиком мыши
         wrapper.addEventListener('wheel', (e) => {
             e.preventDefault(); 
-            targetVelocity = e.deltaY * 0.05; 
-            triggerTick(targetVelocity * 2);
+            targetVelocity = e.deltaY * 0.15; 
         }, { passive: false });
 
-        // Перетаскивание мышью
         let isDragging = false;
         wrapper.onmousedown = () => isDragging = true;
         window.onmouseup = () => isDragging = false;
         
         wrapper.onmousemove = (e) => {
             if (isDragging) {
-                targetVelocity = -(e.movementX * 0.6); 
-                triggerTick(targetVelocity);
+                targetVelocity = -(e.movementX * 1.2); 
             }
         }; 
 
-        // Перетаскивание пальцем
         let touchStart = 0;
         wrapper.ontouchstart = (e) => touchStart = e.touches[0].clientX;
         wrapper.ontouchmove = (e) => {
             const delta = e.touches[0].clientX - touchStart;
-            targetVelocity = -(delta * 0.4);
-            triggerTick(targetVelocity);
+            targetVelocity = -(delta * 1.0);
             touchStart = e.touches[0].clientX;
         };
 
         function setLang(lang) {
             document.querySelectorAll('[data-i18n]').forEach(el => el.innerHTML = i18n[lang][el.dataset.i18n] || el.innerHTML);
             
-            // Создаем 4 одинаковых блока для бесшовности
             const catsArr = i18n[lang].cats;
             const fullList = [...catsArr, ...catsArr, ...catsArr, ...catsArr];
             
