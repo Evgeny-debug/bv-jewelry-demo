@@ -28,7 +28,8 @@
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { background-color: var(--bg-body); font-family: 'Inter', sans-serif; color: var(--text-main); overflow-x: hidden; transition: background 0.5s ease; }
+        body { background-color: var(--bg-body); font-family: 'Inter', sans-serif; color: var(--text-main); overflow-x: hidden; transition: background 0.5s ease; display: flex; flex-direction: column; min-height: 100vh; }
+        main { flex-grow: 1; }
 
         /* --- HEADER --- */
         header {
@@ -39,9 +40,14 @@
         }
         header.scrolled { height: 75px; background: var(--bg-body); border-bottom: 1px solid var(--border); backdrop-filter: blur(20px); }
 
-        .bv-logo { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; text-decoration: none; -webkit-box-reflect: below -2px linear-gradient(transparent, rgba(255, 255, 255, 0.1)); }
+        .header-left { display: flex; align-items: center; gap: 24px; flex: 1; }
+        .header-right { display: flex; align-items: center; gap: 20px; flex: 1; justify-content: flex-end; }
+        .desktop-only { display: flex; }
+
+        /* --- LOGO --- */
+        .bv-logo { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; text-decoration: none; -webkit-box-reflect: below -2px linear-gradient(transparent, rgba(255, 255, 255, 0.1)); transition: 0.4s ease; z-index: 4001; }
         .bv-logo span:first-child { font-family: 'Playfair Display'; font-size: clamp(28px, 4vw, 44px); font-weight: 600; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 3px; line-height: 0.9; }
-        .bv-logo span:last-child { font-size: 8px; text-transform: uppercase; letter-spacing: 7px; color: var(--text-main); margin-top: 5px; opacity: 0.8; }
+        .bv-logo span:last-child { font-size: 8px; text-transform: uppercase; letter-spacing: 7px; color: var(--text-main); margin-top: 5px; opacity: 0.8; transition: 0.4s ease; }
 
         .nav-left { display: flex; gap: 24px; align-items: center; }
         .nav-left > a, .catalog-toggle { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: inherit; opacity: 0.6; transition: 0.3s; text-decoration: none; cursor: pointer; }
@@ -49,13 +55,13 @@
         .btn-order { border: 1px solid var(--gold-muted); padding: 6px 14px; border-radius: 2px; color: var(--gold-muted) !important; opacity: 1 !important; }
 
         /* --- SEARCH BAR --- */
-        .search-box { position: relative; margin-left: 10px; }
+        .search-box { position: relative; display: flex; align-items: center; }
         .search-input { background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text-main); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; padding: 4px 20px 4px 0; width: 80px; transition: 0.4s ease; outline: none; font-family: 'Inter'; }
         .search-input::placeholder { color: var(--text-main); opacity: 0.4; }
         .search-input:focus { width: 140px; border-bottom-color: var(--gold-muted); }
         .search-icon { position: absolute; right: 0; bottom: 6px; width: 12px; height: 12px; stroke: var(--gold-muted); pointer-events: none; }
 
-        /* --- DESKTOP CATALOG DROPDOWN (Multi-level) --- */
+        /* --- DESKTOP CATALOG DROPDOWN --- */
         .catalog-dropdown-wrapper { position: relative; padding: 20px 0; margin: -20px 0; }
         .catalog-dropdown { position: absolute; top: 100%; left: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 10px 0; min-width: 180px; opacity: 0; visibility: hidden; transform: translateY(10px); transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: flex; flex-direction: column; }
         .catalog-dropdown-wrapper:hover .catalog-dropdown { opacity: 1; visibility: visible; transform: translateY(0); }
@@ -64,11 +70,9 @@
         .cat-item-wrapper > a { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); opacity: 0.7; transition: 0.3s; text-decoration: none; }
         .cat-item-wrapper:hover > a { opacity: 1; background: rgba(197, 160, 89, 0.05); color: var(--gold-muted); padding-left: 24px; }
         
-        /* Sub-catalog (opens to right) */
         .sub-catalog { position: absolute; top: -10px; left: 100%; margin-left: 5px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 16px; width: max-content; min-width: 320px; opacity: 0; visibility: hidden; transform: translateX(-10px); transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.4); display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; pointer-events: none; }
         .cat-item-wrapper:hover .sub-catalog { opacity: 1; visibility: visible; transform: translateX(0); pointer-events: auto; }
         
-        /* Sub-catalog product card (Hover effect for changing angle) */
         .sub-prod-card { display: flex; flex-direction: column; gap: 8px; text-decoration: none; group; cursor: pointer; }
         .img-swap-box { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; border-radius: 2px; background: var(--border); }
         .img-swap-box img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
@@ -79,18 +83,22 @@
         .sub-prod-title { font-size: 11px; color: var(--text-main); opacity: 0.8; font-weight: 500; }
         .sub-prod-price { font-size: 10px; color: var(--gold-muted); font-weight: 600; }
 
-        /* --- DROPDOWNS (Right Side) --- */
-        .icon-btn { cursor: pointer; display: flex; align-items: center; opacity: 0.7; transition: 0.3s; position: relative; }
+        /* --- DESKTOP DROPDOWNS (Right Side) --- */
+        .icon-btn { cursor: pointer; display: flex; align-items: center; opacity: 0.7; transition: 0.3s; position: relative; color: inherit; text-decoration: none; background: none; border: none; }
         .icon-btn:hover { opacity: 1; color: var(--gold-muted); }
         .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
         
         .cart-badge { position: absolute; top: -6px; right: -8px; background: var(--gold-muted); color: #000; font-size: 8px; font-weight: 700; width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
 
-        .dropdown-menu { position: absolute; top: 140%; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 6px 0; min-width: 140px; opacity: 0; visibility: hidden; transform: translateY(10px); transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.4); }
+        .dropdown-wrapper { position: relative; padding: 20px 0; margin: -20px 0; } 
+        .dropdown-menu { position: absolute; top: 100%; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 6px 0; min-width: 140px; opacity: 0; visibility: hidden; transform: translateY(10px); transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 5100; } 
         .dropdown-wrapper:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
         .dropdown-item { padding: 8px 16px; display: flex; align-items: center; gap: 10px; font-size: 11px; cursor: pointer; color: var(--text-main); text-decoration: none; opacity: 0.8; transition: 0.2s; }
         .dropdown-item:hover { background: rgba(197, 160, 89, 0.1); opacity: 1; color: var(--gold-muted); }
+        
         .flag { width: 16px; height: 11px; object-fit: cover; }
+        .dropdown-wrapper.lang-dropdown .lang-current { cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; opacity: 0.7; transition: 0.3s; }
+        .dropdown-wrapper.lang-dropdown:hover .lang-current { opacity: 1; }
 
         /* --- BURGER & MOBILE MENU --- */
         .burger { width: 22px; height: 14px; position: relative; cursor: pointer; display: none; z-index: 5001; }
@@ -102,14 +110,22 @@
         .burger.open span:nth-child(2) { opacity: 0; }
         .burger.open span:nth-child(3) { top: 50%; transform: rotate(-45deg); background: var(--gold-muted); }
 
-        .side-menu { position: fixed; top: 0; left: -100%; width: 85%; max-width: 400px; height: 100%; background: var(--bg-body); z-index: 5000; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; padding: 120px 40px; gap: 24px; border-right: 1px solid var(--border); overflow-y: auto; }
+        .side-menu { position: fixed; top: 0; left: -100%; width: 85%; max-width: 400px; height: 100%; background: var(--bg-body); z-index: 5000; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; padding: 120px 40px 60px; gap: 24px; border-right: 1px solid var(--border); overflow-y: auto; }
         .side-menu.active { left: 0; }
-        .side-menu > a, .mob-cat-title { font-family: 'Playfair Display'; font-size: 26px; color: var(--text-main); text-decoration: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .side-menu > a, .mob-menu-title { font-family: 'Playfair Display'; font-size: 26px; color: var(--text-main); text-decoration: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; }
 
-        .mobile-catalog-list { display: flex; flex-direction: column; gap: 16px; padding-left: 15px; overflow: hidden; max-height: 0; transition: max-height 0.4s ease; opacity: 0; }
-        .mobile-catalog-list.open { max-height: 300px; opacity: 1; margin-top: 15px; }
-        .mobile-catalog-list a { font-size: 16px; font-family: 'Inter'; font-weight: 300; opacity: 0.7; transition: 0.3s; }
-        .mobile-catalog-list a:hover { opacity: 1; color: var(--gold-muted); }
+        .mob-accordion-list { display: flex; flex-direction: column; gap: 16px; padding-left: 15px; overflow: hidden; max-height: 0; transition: max-height 0.4s ease, opacity 0.4s ease, margin-top 0.4s ease; opacity: 0; margin-top: 0; }
+        .mob-accordion-list.open { max-height: 400px; opacity: 1; margin-top: 15px; } 
+        .mob-accordion-list a, .mob-accordion-list .dropdown-item { font-size: 16px; font-family: 'Inter'; font-weight: 300; opacity: 0.7; transition: 0.3s; text-transform: uppercase; padding: 0; color: inherit; display: flex; align-items: center; gap: 10px; }
+        .mob-accordion-list a:hover, .mob-accordion-list .dropdown-item:hover { opacity: 1; color: var(--gold-muted); background: transparent; }
+        
+        .menu-divider { border-top: 1px solid var(--border); margin: 20px 0; }
+        .mobile-settings-group { display: flex; flex-direction: column; gap: 20px; }
+        .mobile-theme-toggle { display: flex; align-items: center; gap: 15px; font-size: 14px; opacity: 0.7; transition: 0.3s; color: inherit; cursor: pointer; text-transform: uppercase;}
+        .mobile-theme-toggle:hover { opacity: 1; color: var(--gold-muted); }
+        .mobile-theme-toggle svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+        
+        .btn-mob-order { border: 1px solid var(--gold-muted); padding: 12px; border-radius: 4px; text-align: center; color: var(--gold-muted) !important; font-size: 16px; font-weight: 600; margin-top: 20px; text-transform: uppercase;}
 
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 4500; opacity: 0; visibility: hidden; transition: 0.5s; backdrop-filter: blur(10px); }
         .menu-overlay.active { opacity: 1; visibility: visible; }
@@ -149,11 +165,21 @@
         }
         .floating-contact:hover { opacity: 1; transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-color: var(--gold-muted); }
 
+        /* --- MOBILE ADAPTATION --- */
         @media (max-width: 1024px) {
+            .desktop-only { display: none !important; }
             .nav-left { display: none; }
-            .search-box { display: none; } /* Прячем поиск в шапке на мобилках */
+            
+            .header-left { gap: 16px; }
             .burger { display: flex; }
             
+            .search-input { width: 50px; font-size: 10px; padding-right: 14px; }
+            .search-input:focus { width: 90px; }
+            .search-icon { width: 10px; height: 10px; bottom: 7px; }
+
+            .bv-logo span:first-child { font-size: 26px; }
+            .bv-logo span:last-child { font-size: 6px; letter-spacing: 5px; }
+
             .art-collage { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 240px; gap: 16px; padding: 80px 5% 40px; }
             .t-rings { grid-column: span 2; grid-row: span 2; }
             .t-earrings, .t-bracelets, .t-wedding { grid-column: span 1; grid-row: span 1; }
@@ -161,19 +187,22 @@
             .t-crosses { grid-column: span 2; grid-row: span 1; }
 
             header { height: 75px; }
-            .bv-logo span:first-child { font-size: 32px; }
 
             .floating-contact { bottom: 20px; right: 20px; padding: 14px; border-radius: 50%; opacity: 0.6; }
             .floating-contact span { display: none; }
             .floating-contact svg { width: 22px; height: 22px; }
         }
 
-        /* --- FOOTER --- */
-        footer { padding: 70px 6% 50px; background: var(--bg-card); border-top: 1px solid var(--border); }
+        /* --- FOOTER & COPYRIGHT --- */
+        footer { padding: 70px 6% 40px; background: var(--bg-card); border-top: 1px solid var(--border); }
         .contact-icon { width: 16px; height: 16px; fill: var(--gold-muted); flex-shrink: 0; }
         .contact-link { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; transition: 0.3s; font-size: 13px; }
         .contact-link:hover { color: var(--gold-muted); }
         .phone-num { font-family: 'Inter', sans-serif; font-weight: 500; }
+        
+        .sub-footer { padding: 20px 6%; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; justify-content: center; align-items: center; font-size: 10px; color: var(--text-main); opacity: 0.5; font-family: 'Inter', sans-serif; letter-spacing: 0.5px; }
+        .sub-footer a { color: inherit; text-decoration: none; transition: opacity 0.3s; font-weight: 500; }
+        .sub-footer a:hover { opacity: 1; color: var(--gold-muted); }
     </style>
 </head>
 <body>
@@ -181,73 +210,74 @@
     <div class="menu-overlay" id="overlay"></div>
 
     <header id="header">
-        <div class="burger" id="burger"><span></span><span></span><span></span></div>
-
-        <nav class="nav-left">
-            <a href="#home" data-i18n="m1">Головна</a>
+        
+        <div class="header-left">
+            <div class="burger" id="burger"><span></span><span></span><span></span></div>
             
-            <div class="catalog-dropdown-wrapper group">
-                <span class="catalog-toggle flex items-center gap-1" data-i18n="m2">
-                    Каталог 
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-180 transition-transform"><path d="M6 9l6 6 6-6"/></svg>
-                </span>
-                <div class="catalog-dropdown">
-                    
-                    <div class="cat-item-wrapper">
-                        <a href="#rings">
-                            <span data-i18n="c1">Персні</span>
-                            <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
-                        </a>
-                        <div class="sub-catalog">
-                            <a href="#product-1" class="sub-prod-card">
-                                <div class="img-swap-box">
-                                    <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=400" class="img-front">
-                                    <img src="https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?q=80&w=400" class="img-back">
-                                </div>
-                                <span class="sub-prod-title">Solitaire Diamond</span>
-                                <span class="sub-prod-price">$1,250</span>
+            <nav class="nav-left">
+                <a href="#home" data-i18n="m1">Головна</a>
+                
+                <div class="catalog-dropdown-wrapper group">
+                    <span class="catalog-toggle flex items-center gap-1" data-i18n="m2">
+                        Каталог 
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-180 transition-transform"><path d="M6 9l6 6 6-6"/></svg>
+                    </span>
+                    <div class="catalog-dropdown">
+                        <div class="cat-item-wrapper">
+                            <a href="#rings">
+                                <span data-i18n="c1">Персні</span>
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg>
                             </a>
-                            <a href="#product-2" class="sub-prod-card">
-                                <div class="img-swap-box">
-                                    <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=400" class="img-front">
-                                    <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=400" class="img-back">
-                                </div>
-                                <span class="sub-prod-title">Eternity Band</span>
-                                <span class="sub-prod-price">$890</span>
-                            </a>
+                            <div class="sub-catalog">
+                                <a href="#product-1" class="sub-prod-card">
+                                    <div class="img-swap-box">
+                                        <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=400" class="img-front">
+                                        <img src="https://images.unsplash.com/photo-1596944924616-7b38e7cfac36?q=80&w=400" class="img-back">
+                                    </div>
+                                    <span class="sub-prod-title">Solitaire Diamond</span>
+                                    <span class="sub-prod-price">$1,250</span>
+                                </a>
+                                <a href="#product-2" class="sub-prod-card">
+                                    <div class="img-swap-box">
+                                        <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=400" class="img-front">
+                                        <img src="https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=400" class="img-back">
+                                    </div>
+                                    <span class="sub-prod-title">Eternity Band</span>
+                                    <span class="sub-prod-price">$890</span>
+                                </a>
+                            </div>
                         </div>
+                        <div class="cat-item-wrapper"><a href="#earrings" data-i18n="c2">Сережки</a></div>
+                        <div class="cat-item-wrapper"><a href="#bracelets" data-i18n="c3">Браслети</a></div>
+                        <div class="cat-item-wrapper"><a href="#necklaces" data-i18n="c4">Кольє</a></div>
+                        <div class="cat-item-wrapper"><a href="#wedding" data-i18n="c5">Обручки</a></div>
+                        <div class="cat-item-wrapper"><a href="#crosses" data-i18n="c6">Хрестики</a></div>
                     </div>
-
-                    <div class="cat-item-wrapper"><a href="#earrings" data-i18n="c2">Сережки</a></div>
-                    <div class="cat-item-wrapper"><a href="#bracelets" data-i18n="c3">Браслети</a></div>
-                    <div class="cat-item-wrapper"><a href="#necklaces" data-i18n="c4">Кольє</a></div>
-                    <div class="cat-item-wrapper"><a href="#wedding" data-i18n="c5">Обручки</a></div>
-                    <div class="cat-item-wrapper"><a href="#crosses" data-i18n="c6">Хрестики</a></div>
                 </div>
-            </div>
 
-            <a href="#footer" class="btn-order" data-i18n="m_order">Замовити</a>
-            
+                <a href="#footer" class="btn-order" data-i18n="m_order">Замовити</a>
+            </nav>
+
             <div class="search-box">
                 <input type="text" class="search-input" data-i18n-placeholder="search_ph" placeholder="Пошук...">
                 <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
-        </nav>
+        </div>
 
         <a href="#home" class="bv-logo">
             <span>BV</span><span>jewelry</span>
         </a>
 
-        <div class="header-right flex items-center gap-6">
+        <div class="header-right">
             
-            <div id="themeToggle" class="icon-btn">
+            <div id="themeToggle" class="icon-btn desktop-only">
                 <svg id="themeIcon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
                 </svg>
             </div>
 
-            <div class="dropdown-wrapper">
-                <div class="lang-current" style="opacity: 0.7; transition: 0.3s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7">
+            <div class="dropdown-wrapper lang-dropdown desktop-only">
+                <div class="lang-current">
                     <img src="https://flagcdn.com/ua.svg" class="flag" id="currentFlag">
                     <span id="currentLangLabel">UA</span>
                 </div>
@@ -266,7 +296,7 @@
                 <span class="cart-badge">0</span>
             </a>
 
-            <div class="dropdown-wrapper">
+            <div class="dropdown-wrapper desktop-only">
                 <div class="icon-btn">
                     <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                 </div>
@@ -275,19 +305,20 @@
                     <a href="#register" class="dropdown-item" data-i18n="register">Зареєструватися</a>
                 </div>
             </div>
-
         </div>
+
     </header>
 
     <nav class="side-menu" id="sideMenu">
-        <a href="#home" data-i18n="m1" onclick="toggleMenu()">Головна</a>
+        
+        <a href="#home" data-i18n="m1" onclick="toggleMenu()" class="mob-menu-title" style="font-size: 16px; opacity: 0.7; font-family: 'Inter'; font-weight: 300;">Головна</a>
         
         <div>
-            <div class="mob-cat-title" onclick="toggleMobileCatalog()">
+            <div class="mob-menu-title" onclick="toggleAccordion('mobCatList', 'mobCatArrow')" style="font-size: 16px; opacity: 0.7; font-family: 'Inter'; font-weight: 300;">
                 <span data-i18n="m2">Каталог</span>
-                <svg id="mobCatArrow" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--gold-muted)" stroke-width="2" class="transition-transform duration-300"><path d="M6 9l6 6 6-6"/></svg>
+                <svg id="mobCatArrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold-muted)" stroke-width="2" class="transition-transform duration-300"><path d="M6 9l6 6 6-6"/></svg>
             </div>
-            <div class="mobile-catalog-list" id="mobCatList">
+            <div class="mob-accordion-list" id="mobCatList">
                 <a href="#art-collage" data-i18n="c1" onclick="toggleMenu()">Персні</a>
                 <a href="#art-collage" data-i18n="c2" onclick="toggleMenu()">Сережки</a>
                 <a href="#art-collage" data-i18n="c3" onclick="toggleMenu()">Браслети</a>
@@ -297,50 +328,98 @@
             </div>
         </div>
 
-        <a href="#footer" data-i18n="m4" onclick="toggleMenu()">Контакти</a>
-        <a href="#footer" class="btn-order w-max mt-4" data-i18n="m_order" onclick="toggleMenu()">Замовити</a>
+        <a href="#footer" data-i18n="m4" onclick="toggleMenu()" class="mob-menu-title" style="font-size: 16px; opacity: 0.7; font-family: 'Inter'; font-weight: 300;">Контакти</a>
+        
+        <div class="menu-divider"></div>
+
+        <div class="mobile-settings-group">
+            
+            <div>
+                <div class="mob-menu-title" onclick="toggleAccordion('mobLangList', 'mobLangArrow')" style="font-size: 14px; opacity: 0.7; font-family: 'Inter'; font-weight: 300; text-transform: uppercase;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <img src="https://flagcdn.com/ua.svg" class="flag" id="currentFlagMob">
+                        <span>МОВА:</span> <span id="currentLangLabelMob" style="font-weight: 500;">UA</span>
+                    </div>
+                    <svg id="mobLangArrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold-muted)" stroke-width="2" class="transition-transform duration-300"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+                <div class="mob-accordion-list" id="mobLangList">
+                    <div class="dropdown-item" onclick="changeLang('uk')"><img src="https://flagcdn.com/ua.svg" class="flag"> UA</div>
+                    <div class="dropdown-item" onclick="changeLang('en')"><img src="https://flagcdn.com/gb.svg" class="flag"> EN</div>
+                    <div class="dropdown-item" onclick="changeLang('ru')"><img src="https://flagcdn.com/ru.svg" class="flag"> RU</div>
+                    <div class="dropdown-item" onclick="changeLang('de')"><img src="https://flagcdn.com/de.svg" class="flag"> DE</div>
+                    <div class="dropdown-item" onclick="changeLang('tr')"><img src="https://flagcdn.com/tr.svg" class="flag"> TR</div>
+                    <div class="dropdown-item" onclick="changeLang('bg')"><img src="https://flagcdn.com/bg.svg" class="flag"> BG</div>
+                </div>
+            </div>
+
+            <div id="themeToggleMob" class="mobile-theme-toggle">
+                <svg viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+                <span data-i18n="theme_mob">Змінити тему</span>
+            </div>
+
+            <div>
+                <div class="mob-menu-title" onclick="toggleAccordion('mobUserList', 'mobUserArrow')" style="font-size: 14px; opacity: 0.7; font-family: 'Inter'; font-weight: 300; text-transform: uppercase;">
+                    <div style="display: flex; align-items: center; gap: 10px;">
+                        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                        <span data-i18n="login_mob_title">КАБІНЕТ</span>
+                    </div>
+                    <svg id="mobUserArrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold-muted)" stroke-width="2" class="transition-transform duration-300"><path d="M6 9l6 6 6-6"/></svg>
+                </div>
+                <div class="mob-accordion-list" id="mobUserList">
+                    <a href="#login" data-i18n="login" onclick="toggleMenu()">Увійти</a>
+                    <a href="#register" data-i18n="register" onclick="toggleMenu()">Зареєструватися</a>
+                </div>
+            </div>
+            
+            <a href="#art-collage" class="btn-order btn-mob-order w-full mt-4" data-i18n="m_order" onclick="toggleMenu()">Замовити</a>
+        </div>
+        
     </nav>
 
-    <section class="h-[80vh] flex items-center justify-center relative overflow-hidden" id="home">
-        <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1920')] bg-cover bg-center opacity-40"></div>
-        <h1 class="font-['Playfair_Display'] text-white text-6xl md:text-9xl uppercase tracking-widest relative z-10 text-center">BV Jewelry</h1>
-    </section>
+    <main>
+        <section class="h-[80vh] flex items-center justify-center relative overflow-hidden" id="home">
+            <div class="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1920')] bg-cover bg-center opacity-40"></div>
+            <h1 class="font-['Playfair_Display'] text-white text-6xl md:text-9xl uppercase tracking-widest relative z-10 text-center">BV Jewelry</h1>
+        </section>
 
-    <div class="marquee-wrapper" id="marqueeWrapper">
-        <div class="marquee-track" id="marqueeTrack"></div>
-    </div>
-
-    <section class="art-collage" id="art-collage">
-        <div class="collage-tile t-rings" onclick="location.href='#rings'">
-            <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=800" alt="Rings">
-            <div class="collage-label" data-i18n="c1">Персні</div>
+        <div class="marquee-wrapper" id="marqueeWrapper">
+            <div class="marquee-track" id="marqueeTrack"></div>
         </div>
 
-        <div class="collage-tile t-earrings" onclick="location.href='#earrings'">
-            <img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=800" alt="Earrings">
-            <div class="collage-label" data-i18n="c2">Сережки</div>
-        </div>
+        <section class="art-collage" id="art-collage">
+            <div class="collage-tile t-rings" onclick="location.href='#rings'">
+                <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=800" alt="Rings">
+                <div class="collage-label" data-i18n="c1">Персні</div>
+            </div>
 
-        <div class="collage-tile t-bracelets" onclick="location.href='#bracelets'">
-            <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=800" alt="Bracelets">
-            <div class="collage-label" data-i18n="c3">Браслети</div>
-        </div>
+            <div class="collage-tile t-earrings" onclick="location.href='#earrings'">
+                <img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=800" alt="Earrings">
+                <div class="collage-label" data-i18n="c2">Сережки</div>
+            </div>
 
-        <div class="collage-tile t-neck" onclick="location.href='#necklaces'">
-            <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800" alt="Necklaces">
-            <div class="collage-label" data-i18n="c4">Кольє</div>
-        </div>
+            <div class="collage-tile t-bracelets" onclick="location.href='#bracelets'">
+                <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=800" alt="Bracelets">
+                <div class="collage-label" data-i18n="c3">Браслети</div>
+            </div>
 
-        <div class="collage-tile t-wedding" onclick="location.href='#wedding'">
-            <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=800" alt="Wedding">
-            <div class="collage-label" data-i18n="c5">Обручки</div>
-        </div>
+            <div class="collage-tile t-neck" onclick="location.href='#necklaces'">
+                <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800" alt="Necklaces">
+                <div class="collage-label" data-i18n="c4">Кольє</div>
+            </div>
 
-        <div class="collage-tile t-crosses" onclick="location.href='#crosses'">
-            <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=800" alt="Crosses" style="object-position: center 30%;">
-            <div class="collage-label" data-i18n="c6">Хрестики</div>
-        </div>
-    </section>
+            <div class="collage-tile t-wedding" onclick="location.href='#wedding'">
+                <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=800" alt="Wedding">
+                <div class="collage-label" data-i18n="c5">Обручки</div>
+            </div>
+
+            <div class="collage-tile t-crosses" onclick="location.href='#crosses'">
+                <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=800" alt="Crosses" style="object-position: center 30%;">
+                <div class="collage-label" data-i18n="c6">Хрестики</div>
+            </div>
+        </section>
+    </main>
 
     <a href="https://t.me/bv_jewelry_izmail" target="_blank" class="floating-contact">
         <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.45-.42-1.39-.89.03-.24.37-.48 1.02-.73 4-1.74 6.67-2.88 8.01-3.41 3.81-1.52 4.6-1.78 5.12-1.79.11 0 .37.03.54.17.14.12.18.28.2.4.02.07.02.15.02.24z"/></svg>
@@ -349,9 +428,14 @@
 
     <footer id="footer">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
-            <div class="flex flex-col items-center md:items-start text-center">
-                <div class="bv-logo mb-6 relative !static !transform-none"><span>BV</span><span>jewelry</span></div>
-                <p class="text-[11px] text-gray-500 max-w-xs font-light" data-i18n="f_desc">Ювелірне ательє вищої категорії складності. Традиції з 1984 року.</p>
+            
+            <div class="flex flex-col items-start text-left">
+                <div class="bv-logo mb-6 relative !static !transform-none !items-start !opacity-100 !pointer-events-auto">
+                    <span>BV</span><span>jewelry</span>
+                </div>
+                <p class="text-[11px] text-gray-500 max-w-xs font-light leading-relaxed" data-i18n="f_desc">
+                    Ювелірне ательє вищої категорії складності.<br>Традиції якості з 1984 року.
+                </p>
             </div>
             
             <div class="flex flex-col items-center md:items-end gap-5">
@@ -373,21 +457,35 @@
         </div>
     </footer>
 
+    <div class="sub-footer">
+        © <span id="currentYear"></span>&nbsp;BV-Jewelry. Designed by <a href="#" target="_blank">Evgeny.Sychov</a>
+    </div>
+
     <script>
+        document.getElementById('currentYear').textContent = new Date().getFullYear();
+
         const i18n = {
-            uk: { m1: "Головна", m2: "Каталог", m4: "Контакти", m_order: "Замовити", c1: "Персні", c2: "Сережки", c3: "Браслети", c4: "Кольє", c5: "Обручки", c6: "Хрестики", float_btn: "Написати нам", f_addr: "Ізмаїл: Торгова, 68 • Покровська, 57", f_desc: "Ювелірне ательє вищої категорії складності. Традиції якості з 1984 року.", cats: ["Каблучки", "Сережки", "Браслети", "Кольє", "Хрестики"], login: "Увійти", register: "Зареєструватися", search_ph: "Пошук..." },
-            en: { m1: "Home", m2: "Catalog", m4: "Contacts", m_order: "Order", c1: "Rings", c2: "Earrings", c3: "Bracelets", c4: "Necklaces", c5: "Wedding Bands", c6: "Crosses", float_btn: "Message us", f_addr: "Izmail: Torgova, 68 • Pokrovska, 57", f_desc: "High-end jewelry atelier. Traditions of quality since 1984.", cats: ["Rings", "Earrings", "Bracelets", "Necklaces", "Crosses"], login: "Log in", register: "Register", search_ph: "Search..." },
-            ru: { m1: "Главная", m2: "Каталог", m4: "Контакты", m_order: "Заказать", c1: "Кольца", c2: "Серьги", c3: "Браслеты", c4: "Колье", c5: "Обручальные", c6: "Крестики", float_btn: "Написать нам", f_addr: "Измаил: Торговая, 68 • Покровская, 57", f_desc: "Ювелирное ателье высшей категории сложности. Традиции качества с 1984 года.", cats: ["Кольца", "Серьги", "Браслеты", "Колье", "Крестики"], login: "Войти", register: "Регистрация", search_ph: "Поиск..." },
-            de: { m1: "Startseite", m2: "Katalog", m4: "Kontakte", m_order: "Bestellen", c1: "Ringe", c2: "Ohrringe", c3: "Armbänder", c4: "Halsketten", c5: "Eheringe", c6: "Kreuze", float_btn: "Schreiben Sie uns", f_addr: "Izmail: Torgova, 68 • Pokrovska, 57", f_desc: "High-End-Schmuckatelier. Qualitätstraditionen seit 1984.", cats: ["Ringe", "Ohrringe", "Armbänder", "Halsketten", "Kreuze"], login: "Anmelden", register: "Registrieren", search_ph: "Suche..." },
-            tr: { m1: "Ana Sayfa", m2: "Katalog", m4: "İletişim", m_order: "Sipariş Ver", c1: "Yüzükler", c2: "Küpeler", c3: "Bileklikler", c4: "Kolyeler", c5: "Alyanslar", c6: "Haçlar", float_btn: "Bize yazın", f_addr: "İzmail: Torgova, 68 • Pokrovska, 57", f_desc: "Üst düzey takı atölyesi. 1984'ten beri kalite gelenekleri.", cats: ["Yüzükler", "Küpeler", "Bileklikler", "Kolyeler", "Haçlar"], login: "Giriş yap", register: "Kayıt ol", search_ph: "Arama..." },
-            bg: { m1: "Начало", m2: "Каталог", m4: "Контакти", m_order: "Поръчай", c1: "Пръстени", c2: "Обеци", c3: "Гривни", c4: "Колиета", c5: "Брачни халки", c6: "Кръстчета", float_btn: "Пишете ни", f_addr: "Измаил: Търговска, 68 • Покровска, 57", f_desc: "Ателие за бижута от висок клас. Традиции в качеството от 1984 г.", cats: ["Пръстени", "Обеци", "Гривни", "Колиета", "Кръстчета"], login: "Вход", register: "Регистрация", search_ph: "Търсене..." }
+            uk: { m1: "Головна", m2: "Каталог", m4: "Контакти", m_order: "Замовити", c1: "Персні", c2: "Сережки", c3: "Браслети", c4: "Кольє", c5: "Обручки", c6: "Хрестики", float_btn: "Написати нам", f_addr: "Ізмаїл: Торгова, 68 • Покровська, 57", f_desc: "Ювелірне ательє вищої категорії складності.<br>Традиції якості з 1984 року.", cats: ["Каблучки", "Сережки", "Браслети", "Кольє", "Хрестики"], login: "Увійти", register: "Зареєструватися", search_ph: "Пошук...", theme_mob: "Змінити тему", login_mob_title: "КАБІНЕТ" },
+            en: { m1: "Home", m2: "Catalog", m4: "Contacts", m_order: "Order", c1: "Rings", c2: "Earrings", c3: "Bracelets", c4: "Necklaces", c5: "Wedding Bands", c6: "Crosses", float_btn: "Message us", f_addr: "Izmail: Torgova, 68 • Pokrovska, 57", f_desc: "High-end jewelry atelier.<br>Traditions of quality since 1984.", cats: ["Rings", "Earrings", "Bracelets", "Necklaces", "Crosses"], login: "Log in", register: "Register", search_ph: "Search...", theme_mob: "Change Theme", login_mob_title: "PROFILE" },
+            ru: { m1: "Главная", m2: "Каталог", m4: "Контакты", m_order: "Заказать", c1: "Кольца", c2: "Серьги", c3: "Браслеты", c4: "Колье", c5: "Обручальные", c6: "Крестики", float_btn: "Написать нам", f_addr: "Измаил: Торговая, 68 • Покровская, 57", f_desc: "Ювелирное ателье высшей категории сложности.<br>Традиции качества с 1984 года.", cats: ["Кольца", "Серьги", "Браслеты", "Колье", "Крестики"], login: "Войти", register: "Регистрация", search_ph: "Поиск...", theme_mob: "Сменить тему", login_mob_title: "КАБИНЕТ" },
+            de: { m1: "Startseite", m2: "Katalog", m4: "Kontakte", m_order: "Bestellen", c1: "Ringe", c2: "Ohrringe", c3: "Armbänder", c4: "Halsketten", c5: "Eheringe", c6: "Kreuze", float_btn: "Schreiben Sie uns", f_addr: "Izmail: Torgova, 68 • Pokrovska, 57", f_desc: "High-End-Schmuckatelier.<br>Qualitätstraditionen seit 1984.", cats: ["Ringe", "Ohrringe", "Armbänder", "Halsketten", "Kreuze"], login: "Anmelden", register: "Registrieren", search_ph: "Suche...", theme_mob: "Thema ändern", login_mob_title: "PROFIL" },
+            tr: { m1: "Ana Sayfa", m2: "Katalog", m4: "İletişim", m_order: "Sipariş Ver", c1: "Yüzükler", c2: "Küpeler", c3: "Bileklikler", c4: "Kolyeler", c5: "Alyanslar", c6: "Haçlar", float_btn: "Bize yazın", f_addr: "İzmail: Torgova, 68 • Pokrovska, 57", f_desc: "Üst düzey takı atölyesi.<br>1984'ten beri kalite gelenekleri.", cats: ["Yüzükler", "Küpeler", "Bileklikler", "Kolyeler", "Haçlar"], login: "Giriş yap", register: "Kayıt ol", search_ph: "Arama...", theme_mob: "Temayı Değiştir", login_mob_title: "PROFİL" },
+            bg: { m1: "Начало", m2: "Каталог", m4: "Контакти", m_order: "Поръчай", c1: "Пръстени", c2: "Обеци", c3: "Гривни", c4: "Колиета", c5: "Брачни халки", c6: "Кръстчета", float_btn: "Пишете ни", f_addr: "Измаил: Търговска, 68 • Покровска, 57", f_desc: "Ателие за бижута от висок клас.<br>Традиции в качеството от 1984 г.", cats: ["Пръстени", "Обеци", "Гривни", "Колиета", "Кръстчета"], login: "Вход", register: "Регистрация", search_ph: "Търсене...", theme_mob: "Смяна на тема", login_mob_title: "ПРОФИЛ" }
         };
 
         const flags = { uk: "ua", en: "gb", ru: "ru", de: "de", tr: "tr", bg: "bg" };
         function changeLang(lang) {
             document.getElementById('currentFlag').src = `https://flagcdn.com/${flags[lang]}.svg`;
             document.getElementById('currentLangLabel').innerText = lang.toUpperCase();
+            document.getElementById('currentFlagMob').src = `https://flagcdn.com/${flags[lang]}.svg`;
+            document.getElementById('currentLangLabelMob').innerText = lang.toUpperCase();
+            
             setLang(lang);
+            
+            const mobLangList = document.getElementById('mobLangList');
+            if(mobLangList.classList.contains('open')) {
+                toggleAccordion('mobLangList', 'mobLangArrow');
+            }
         }
 
         const burger = document.getElementById('burger');
@@ -403,24 +501,21 @@
         burger.onclick = (e) => { e.stopPropagation(); toggleMenu(); };
         overlay.onclick = toggleMenu;
 
-        function toggleMobileCatalog() {
-            const list = document.getElementById('mobCatList');
-            const arrow = document.getElementById('mobCatArrow');
+        function toggleAccordion(listId, arrowId) {
+            const list = document.getElementById(listId);
+            const arrow = document.getElementById(arrowId);
             list.classList.toggle('open');
-            if (list.classList.contains('open')) {
-                arrow.style.transform = 'rotate(180deg)';
-            } else {
-                arrow.style.transform = 'rotate(0deg)';
-            }
+            arrow.style.transform = list.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
         }
 
         const themeToggleBtn = document.getElementById('themeToggle');
+        const themeToggleBtnMob = document.getElementById('themeToggleMob'); 
         const themeIcon = document.getElementById('themeIcon');
 
         const sunSVG = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
         const moonSVG = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
 
-        themeToggleBtn.onclick = () => {
+        function toggleTheme() {
             const html = document.documentElement;
             const currentTheme = html.getAttribute('data-theme');
             
@@ -431,7 +526,9 @@
                 html.setAttribute('data-theme', 'light');
                 themeIcon.innerHTML = moonSVG; 
             }
-        };
+        }
+        themeToggleBtn.onclick = toggleTheme;
+        themeToggleBtnMob.onclick = toggleTheme; 
 
         // --- ЛОГИКА КАРУСЕЛИ ---
         let scrollPos = 0, velocity = 0, targetVelocity = 0;
@@ -483,9 +580,7 @@
         };
 
         function setLang(lang) {
-            // Текстовые узлы
             document.querySelectorAll('[data-i18n]').forEach(el => el.innerHTML = i18n[lang][el.dataset.i18n] || el.innerHTML);
-            // Плейсхолдеры (для поиска)
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = i18n[lang][el.dataset.i18nPlaceholder] || el.placeholder);
             
             const catsArr = i18n[lang].cats;
@@ -502,8 +597,11 @@
 
         window.onload = () => { 
             const savedLang = localStorage.getItem('bv_lang') || 'uk';
+            
             document.getElementById('currentFlag').src = `https://flagcdn.com/${flags[savedLang]}.svg`;
             document.getElementById('currentLangLabel').innerText = savedLang.toUpperCase();
+            document.getElementById('currentFlagMob').src = `https://flagcdn.com/${flags[savedLang]}.svg`;
+            document.getElementById('currentLangLabelMob').innerText = savedLang.toUpperCase();
             
             if (document.documentElement.getAttribute('data-theme') === 'light') {
                 themeIcon.innerHTML = moonSVG;
