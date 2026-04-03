@@ -11,37 +11,61 @@
     <script src="https://cdn.tailwindcss.com"></script>
     
     <style>
+        /* --- HIGH-END COLOR PALETTE & READABILITY --- */
         :root {
-            --bg-body: #0A0A0A;
-            --bg-card: #121212;
-            --text-main: #ffffff;
+            --bg-body: #111111; 
+            --bg-card: #1c1c1e;
+            --text-main: #f5f5f7;
+            --text-muted: #ebebf599; 
             --gold-gradient: linear-gradient(135deg, #fbf2c6 0%, #d4af37 35%, #b68d40 60%, #fbf2c6 100%);
             --gold-muted: #c5a059;
-            --border: rgba(197, 160, 89, 0.12);
-            --danger: #ef4444;
-            --success: #22c55e;
+            --border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(28, 28, 30, 0.75);
+            --glass-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            --danger: #ff453a; 
+            --success: #32d74b; 
         }
 
         [data-theme="light"] {
-            --bg-body: #FDF8F9;
-            --bg-card: #ffffff;
-            --text-main: #1C1C1C;
-            --border: rgba(0, 0, 0, 0.08);
+            --bg-body: #e9e7e0; 
+            --bg-card: #f2f0ea;
+            --text-main: #1d1c1a; 
+            --text-muted: #5c5a56; 
+            --border: rgba(0, 0, 0, 0.06);
+            --glass-bg: rgba(242, 240, 234, 0.85);
+            --glass-shadow: 0 10px 30px rgba(0,0,0,0.06);
+            --danger: #e02424; 
+            --success: #22a042; 
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
-        body { background-color: var(--bg-body); font-family: 'Inter', sans-serif; color: var(--text-main); overflow-x: hidden; transition: background 0.5s ease; display: flex; flex-direction: column; min-height: 100vh; }
+        body { background-color: var(--bg-body); font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif; color: var(--text-main); overflow-x: hidden; transition: background-color 0.6s cubic-bezier(0.25, 1, 0.5, 1), color 0.6s ease; display: flex; flex-direction: column; min-height: 100vh; }
         body.no-scroll { overflow: hidden; }
         main { flex-grow: 1; }
 
-        /* --- HEADER --- */
+        /* --- FLOATING PILL HEADER (iOS Dynamic Island Style) --- */
         header {
-            position: fixed; top: 0; width: 100%; height: 90px;
+            position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 90px;
             display: flex; align-items: center; justify-content: space-between;
-            padding: 0 6%; z-index: 4000; transition: 0.4s ease;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%);
+            padding: 0 6%; z-index: 4000; transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+            background: linear-gradient(to bottom, rgba(0,0,0,0.5) 0%, transparent 100%);
+            border: 1px solid transparent; 
+            border-radius: 0;
         }
-        header.scrolled { height: 75px; background: var(--bg-body); border-bottom: 1px solid var(--border); backdrop-filter: blur(20px); }
+        
+        header.scrolled { 
+            height: 70px; 
+            top: 15px; 
+            width: 94%; 
+            max-width: 1600px;
+            border-radius: 35px; 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(20px); 
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--border); 
+            box-shadow: var(--glass-shadow);
+            padding: 0 40px;
+        }
 
         .header-left { display: flex; align-items: center; gap: 24px; flex: 1; }
         .header-right { display: flex; align-items: center; gap: 20px; flex: 1; justify-content: flex-end; }
@@ -49,160 +73,181 @@
 
         /* --- LOGO --- */
         .bv-logo { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; text-decoration: none; -webkit-box-reflect: below -2px linear-gradient(transparent, rgba(255, 255, 255, 0.1)); transition: 0.4s ease; z-index: 4001; }
-        .bv-logo span:first-child { font-family: 'Playfair Display'; font-size: clamp(28px, 4vw, 44px); font-weight: 600; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 3px; line-height: 0.9; }
-        .bv-logo span:last-child { font-size: 8px; text-transform: uppercase; letter-spacing: 7px; color: var(--text-main); margin-top: 5px; opacity: 0.8; transition: 0.4s ease; }
+        .bv-logo span:first-child { font-family: 'Playfair Display', serif; font-size: clamp(28px, 4vw, 44px); font-weight: 600; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 3px; line-height: 0.9; }
+        .bv-logo span:last-child { font-size: 8px; text-transform: uppercase; letter-spacing: 7px; color: var(--text-main); margin-top: 5px; opacity: 0.8; transition: color 0.6s ease; }
 
         .nav-left { display: flex; gap: 24px; align-items: center; }
-        .nav-left > a, .catalog-toggle { font-size: 10px; text-transform: uppercase; letter-spacing: 1.5px; color: inherit; opacity: 0.6; transition: 0.3s; text-decoration: none; cursor: pointer; }
-        .nav-left > a:hover, .catalog-toggle:hover { opacity: 1; }
-        .btn-order { border: 1px solid var(--gold-muted); padding: 6px 14px; border-radius: 2px; color: var(--gold-muted) !important; opacity: 1 !important; }
+        .nav-left > a, .catalog-toggle { font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 1.5px; color: var(--text-main); opacity: 0.7; transition: 0.3s; text-decoration: none; cursor: pointer; }
+        .nav-left > a:hover, .catalog-toggle:hover { opacity: 1; color: var(--gold-muted); }
+        .btn-order { border: 1px solid var(--gold-muted); padding: 6px 14px; border-radius: 40px; color: var(--gold-muted) !important; opacity: 1 !important; }
 
         /* --- SEARCH BAR --- */
         .search-box { position: relative; display: flex; align-items: center; }
-        .search-input { background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text-main); font-size: 10px; text-transform: uppercase; letter-spacing: 1px; padding: 4px 20px 4px 0; width: 80px; transition: 0.4s ease; outline: none; font-family: 'Inter'; }
-        .search-input::placeholder { color: var(--text-main); opacity: 0.4; }
+        .search-input { background: transparent; border: none; border-bottom: 1px solid var(--border); color: var(--text-main); font-size: 11px; text-transform: uppercase; letter-spacing: 1px; padding: 4px 20px 4px 0; width: 80px; transition: 0.4s ease; outline: none; font-family: 'Inter'; }
+        .search-input::placeholder { color: var(--text-muted); }
         .search-input:focus { width: 140px; border-bottom-color: var(--gold-muted); }
-        .search-icon { position: absolute; right: 0; bottom: 6px; width: 12px; height: 12px; stroke: var(--gold-muted); pointer-events: none; }
+        .search-icon { position: absolute; right: 0; bottom: 6px; width: 14px; height: 14px; stroke: var(--gold-muted); pointer-events: none; }
 
         /* --- DESKTOP MEGA MENU --- */
         .catalog-dropdown-wrapper { position: relative; padding: 20px 0; margin: -20px 0; }
-        .mega-menu { position: absolute; top: 100%; left: -50px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 0; width: 850px; opacity: 0; visibility: hidden; transform: translateY(10px); transition: 0.3s; box-shadow: 0 10px 40px rgba(0,0,0,0.5); display: flex; overflow: hidden; z-index: 5000; }
+        .mega-menu { position: absolute; top: calc(100% + 10px); left: -50px; background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid var(--border); border-radius: 16px; padding: 0; width: 850px; opacity: 0; visibility: hidden; transform: translateY(10px); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--glass-shadow); display: flex; overflow: hidden; z-index: 5000; }
         .catalog-dropdown-wrapper:hover .mega-menu { opacity: 1; visibility: visible; transform: translateY(0); }
         
-        .mega-col-1 { width: 280px; border-right: 1px solid var(--border); background: rgba(0,0,0,0.02); display: flex; flex-direction: column; padding: 15px 0; }
-        .mega-cat-item { display: flex; align-items: center; gap: 12px; padding: 10px 20px; font-size: 11px; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); opacity: 0.6; cursor: pointer; transition: 0.3s; border-left: 3px solid transparent; }
+        .mega-col-1 { width: 280px; border-right: 1px solid var(--border); display: flex; flex-direction: column; padding: 15px 0; }
+        .mega-cat-item { display: flex; align-items: center; gap: 12px; padding: 12px 24px; font-size: 11px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); opacity: 0.7; cursor: pointer; transition: 0.3s; border-left: 3px solid transparent; }
         .mega-cat-item:hover, .mega-cat-item.active { opacity: 1; color: var(--gold-muted); border-left-color: var(--gold-muted); background: rgba(197, 160, 89, 0.05); }
-        .mega-cat-icon { width: 16px; height: 16px; stroke: currentColor; fill: none; opacity: 0.8; }
+        .mega-cat-icon { width: 18px; height: 18px; stroke: currentColor; fill: none; opacity: 0.8; }
 
         .mega-col-2 { flex: 1; padding: 30px; display: none; flex-direction: column; gap: 16px; }
         .mega-col-2.active { display: flex; }
-        .sub-cat-link { font-size: 13px; color: var(--text-main); text-decoration: none; opacity: 0.8; transition: 0.2s; font-weight: 300; }
-        .sub-cat-link:hover { opacity: 1; color: var(--gold-muted); transform: translateX(5px); }
-        .view-all-link { margin-top: auto; font-family: 'Playfair Display'; font-style: italic; font-size: 14px; color: var(--gold-muted); text-decoration: none; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
+        .sub-cat-link { font-size: 14px; color: var(--text-main); text-decoration: none; opacity: 0.8; transition: 0.2s; font-weight: 400; }
+        .sub-cat-link:hover { opacity: 1; color: var(--gold-muted); transform: translateX(4px); }
+        .view-all-link { margin-top: auto; font-family: 'Playfair Display', serif; font-style: italic; font-size: 15px; color: var(--gold-muted); text-decoration: none; display: flex; align-items: center; gap: 5px; transition: 0.3s; }
         .view-all-link:hover { gap: 10px; }
 
-        .mega-col-3 { width: 300px; padding: 30px; background: rgba(0,0,0,0.01); border-left: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; }
+        .mega-col-3 { width: 300px; padding: 30px; border-left: 1px solid var(--border); display: flex; flex-direction: column; justify-content: center; }
         
-        /* Product Card in Mega Menu */
         .preview-card { display: flex; flex-direction: column; gap: 12px; text-decoration: none; group; }
-        .preview-img-wrap { position: relative; width: 100%; aspect-ratio: 1; border-radius: 4px; overflow: hidden; border: 1px solid var(--border); background: var(--bg-body); }
-        .preview-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s ease; }
-        .preview-card:hover .preview-img-wrap img { transform: scale(1.05); }
+        .preview-img-wrap { position: relative; width: 100%; aspect-ratio: 1; border-radius: 8px; overflow: hidden; border: 1px solid var(--border); background: var(--bg-card); }
+        .preview-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.6s ease; }
+        .img-front { opacity: 1; }
+        .img-back { opacity: 0; transform: scale(1.05); }
+        .preview-card:hover .img-front { opacity: 0; }
+        .preview-card:hover .img-back { opacity: 1; transform: scale(1); }
         
-        /* Action Buttons on Card */
-        .card-actions { position: absolute; top: 10px; right: 10px; display: flex; flex-direction: column; gap: 8px; opacity: 0; transform: translateX(10px); transition: 0.3s ease; }
+        .card-actions { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; opacity: 0; transform: translateX(10px); transition: 0.4s ease; }
         .preview-card:hover .card-actions { opacity: 1; transform: translateX(0); }
-        .action-btn { width: 32px; height: 32px; border-radius: 50%; background: var(--bg-card); border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; color: var(--text-main); cursor: pointer; transition: 0.3s; box-shadow: 0 4px 10px rgba(0,0,0,0.2); }
-        .action-btn:hover { color: var(--gold-muted); border-color: var(--gold-muted); }
-        .action-btn svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; }
+        .action-btn { width: 36px; height: 36px; border-radius: 50%; background: var(--glass-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; color: var(--text-main); cursor: pointer; transition: 0.3s; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .action-btn:hover { color: var(--gold-muted); border-color: var(--gold-muted); transform: scale(1.05); }
+        .action-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; }
 
         .preview-info { display: flex; flex-direction: column; gap: 4px; }
-        .status-label { font-size: 9px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 4px; font-weight: 600; }
+        .status-label { font-size: 10px; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 6px; font-weight: 600; }
         .status-label.in-stock { color: var(--success); }
         .status-label.in-stock::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--success); }
-        .status-label.out-stock { color: var(--danger); opacity: 0.7;}
+        .status-label.out-stock { color: var(--danger); opacity: 0.8;}
         .status-label.out-stock::before { content: ''; width: 6px; height: 6px; border-radius: 50%; background: var(--danger); }
         
-        .preview-title { font-size: 14px; font-weight: 500; color: var(--text-main); }
-        .preview-price-wrap { display: flex; align-items: center; gap: 8px; margin-top: 2px; }
-        .price-current { font-size: 14px; color: var(--gold-muted); font-weight: 600; }
-        .price-old { font-size: 12px; color: var(--text-main); opacity: 0.4; text-decoration: line-through; }
+        .preview-title { font-size: 15px; font-weight: 500; color: var(--text-main); }
+        .preview-price-wrap { display: flex; align-items: center; gap: 10px; margin-top: 2px; }
+        .price-current { font-size: 15px; color: var(--gold-muted); font-weight: 600; }
+        .price-old { font-size: 13px; color: var(--text-muted); text-decoration: line-through; }
 
         /* --- DESKTOP DROPDOWNS (Right Side) --- */
-        .icon-btn { cursor: pointer; display: flex; align-items: center; opacity: 0.7; transition: 0.3s; position: relative; color: inherit; text-decoration: none; background: none; border: none; }
+        .icon-btn { cursor: pointer; display: flex; align-items: center; opacity: 0.8; transition: 0.3s; position: relative; color: var(--text-main); text-decoration: none; background: none; border: none; }
         .icon-btn:hover { opacity: 1; color: var(--gold-muted); }
-        .icon-btn svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+        .icon-btn svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
         
-        .cart-badge { position: absolute; top: -6px; right: -8px; background: var(--gold-muted); color: #000; font-size: 8px; font-weight: 700; width: 14px; height: 14px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+        .cart-badge { position: absolute; top: -6px; right: -8px; background: var(--gold-muted); color: #fff; font-size: 9px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 1.5px solid var(--bg-body); transition: border-color 0.6s ease; }
 
         .dropdown-wrapper { position: relative; padding: 20px 0; margin: -20px 0; } 
-        .dropdown-menu { position: absolute; top: 100%; right: 0; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; padding: 6px 0; min-width: 140px; opacity: 0; visibility: hidden; transform: translateY(10px); transition: 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.4); z-index: 5100; } 
+        .dropdown-menu { position: absolute; top: calc(100% + 10px); right: 0; background: var(--glass-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--border); border-radius: 12px; padding: 8px 0; min-width: 150px; opacity: 0; visibility: hidden; transform: translateY(10px); transition: 0.4s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: var(--glass-shadow); z-index: 5100; } 
         .dropdown-wrapper:hover .dropdown-menu { opacity: 1; visibility: visible; transform: translateY(0); }
-        .dropdown-item { padding: 8px 16px; display: flex; align-items: center; gap: 10px; font-size: 11px; cursor: pointer; color: var(--text-main); text-decoration: none; opacity: 0.8; transition: 0.2s; }
-        .dropdown-item:hover { background: rgba(197, 160, 89, 0.1); opacity: 1; color: var(--gold-muted); }
+        .dropdown-item { padding: 10px 20px; display: flex; align-items: center; gap: 12px; font-size: 13px; font-weight: 500; cursor: pointer; color: var(--text-main); text-decoration: none; opacity: 0.8; transition: 0.2s; }
+        .dropdown-item:hover { background: rgba(197, 160, 89, 0.08); opacity: 1; color: var(--gold-muted); }
         
-        .flag { width: 16px; height: 11px; object-fit: cover; }
-        .dropdown-wrapper.lang-dropdown .lang-current { cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 600; opacity: 0.7; transition: 0.3s; }
-        .dropdown-wrapper.lang-dropdown:hover .lang-current { opacity: 1; }
+        .flag { width: 18px; height: 12px; object-fit: cover; border-radius: 2px; }
+        .dropdown-wrapper.lang-dropdown .lang-current { cursor: pointer; display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 600; opacity: 0.8; transition: 0.3s; }
+        .dropdown-wrapper.lang-dropdown:hover .lang-current { opacity: 1; color: var(--gold-muted); }
 
         /* --- BURGER & MOBILE MENU --- */
-        .burger { width: 22px; height: 14px; position: relative; cursor: pointer; display: none; z-index: 5001; }
-        .burger span { display: block; position: absolute; height: 1.5px; width: 100%; background: var(--text-main); transition: .4s; }
+        .burger { width: 24px; height: 16px; position: relative; cursor: pointer; display: none; z-index: 5001; }
+        .burger span { display: block; position: absolute; height: 1.5px; width: 100%; background: var(--text-main); transition: 0.4s cubic-bezier(0.68, -0.55, 0.265, 1.55); border-radius: 2px; }
         .burger span:nth-child(1) { top: 0; }
         .burger span:nth-child(2) { top: 50%; transform: translateY(-50%); }
         .burger span:nth-child(3) { bottom: 0; }
-        .burger.open span:nth-child(1) { top: 50%; transform: rotate(45deg); background: var(--gold-muted); }
+        .burger.open span:nth-child(1) { top: 50%; transform: translateY(-50%) rotate(45deg); background: var(--gold-muted); }
         .burger.open span:nth-child(2) { opacity: 0; }
-        .burger.open span:nth-child(3) { top: 50%; transform: rotate(-45deg); background: var(--gold-muted); }
+        .burger.open span:nth-child(3) { top: 50%; transform: translateY(-50%) rotate(-45deg); background: var(--gold-muted); }
 
-        .side-menu { position: fixed; top: 0; left: -100%; width: 85%; max-width: 400px; height: 100%; background: var(--bg-body); z-index: 5000; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; padding: 120px 40px 60px; gap: 24px; border-right: 1px solid var(--border); overflow-y: auto; }
-        .side-menu.active { left: 0; }
-        .side-menu > a, .mob-menu-title { font-family: 'Playfair Display'; font-size: 20px; color: var(--text-main); text-decoration: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; }
+        .side-menu { position: fixed; top: 0; left: -100%; width: 85%; max-width: 400px; height: 100vh; background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 5000; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; padding: 100px 30px 60px; gap: 20px; border-right: 1px solid var(--border); overflow-y: auto; }
+        .side-menu.active { left: 0; box-shadow: 10px 0 40px rgba(0,0,0,0.3); }
+        .side-menu > a, .mob-menu-title { font-family: 'Inter', sans-serif; font-weight: 500; font-size: 16px; color: var(--text-main); text-decoration: none; cursor: pointer; display: flex; justify-content: space-between; align-items: center; text-transform: uppercase; letter-spacing: 1px; opacity: 0.9; }
 
-        .mob-accordion-list { display: flex; flex-direction: column; gap: 16px; padding-left: 15px; overflow: hidden; max-height: 0; transition: max-height 0.4s ease, opacity 0.4s ease, margin-top 0.4s ease; opacity: 0; margin-top: 0; }
-        .mob-accordion-list.open { max-height: 600px; opacity: 1; margin-top: 15px; } 
-        .mob-accordion-list a, .mob-accordion-list .dropdown-item { font-size: 14px; font-family: 'Inter'; font-weight: 300; opacity: 0.7; transition: 0.3s; text-transform: uppercase; padding: 0; color: inherit; display: flex; align-items: center; gap: 10px; text-decoration: none;}
-        .mob-accordion-list a:hover, .mob-accordion-list .dropdown-item:hover { opacity: 1; color: var(--gold-muted); background: transparent; }
+        .mob-accordion-list { display: flex; flex-direction: column; overflow: hidden; max-height: 0; transition: max-height 0.4s ease; opacity: 0; margin-top: 0; }
+        .mob-accordion-list.open { max-height: 1500px; opacity: 1; margin-top: 15px; } 
+
+        .mob-nested-wrap { border-bottom: 1px solid var(--border); }
+        .mob-nested-wrap:last-child { border-bottom: none; }
+        .mob-nested-title { display: flex; justify-content: space-between; align-items: center; padding: 14px 0; font-size: 14px; font-weight: 500; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; color: var(--text-main); opacity: 0.8; transition: 0.3s; }
+        .mob-nested-title:hover { opacity: 1; color: var(--gold-muted); }
         
-        .menu-divider { border-top: 1px solid var(--border); margin: 20px 0; }
+        .mob-nested-list { max-height: 0; overflow: hidden; transition: max-height 0.4s ease, padding 0.4s ease; padding: 0 10px; }
+        .mob-nested-list.open { max-height: 600px; padding: 15px 10px; margin-bottom: 10px; background: rgba(0,0,0,0.03); border-radius: 8px; }
+        [data-theme="dark"] .mob-nested-list.open { background: rgba(255,255,255,0.03); }
+        
+        .mob-sub-links { display: flex; flex-direction: column; gap: 14px; margin-bottom: 20px; }
+        .mob-sub-links .sub-cat-link { font-size: 14px; text-transform: none; letter-spacing: 0.5px; color: var(--text-main); opacity: 0.7; font-weight: 400; }
+        .mob-sub-links .sub-cat-link:hover { color: var(--gold-muted); opacity: 1; }
+        
+        .mob-feat-prod { display: flex; align-items: center; gap: 15px; padding-top: 15px; border-top: 1px solid var(--border); text-decoration: none; }
+        .mob-feat-img { width: 70px; height: 70px; object-fit: cover; border-radius: 6px; border: 1px solid var(--border); }
+        .mob-feat-info { display: flex; flex-direction: column; gap: 4px; flex-grow: 1; }
+        .mob-feat-title { font-size: 13px; font-weight: 500; color: var(--text-main); }
+        .mob-feat-price { font-size: 13px; color: var(--gold-muted); font-weight: 600; }
+        .mob-feat-actions { display: flex; gap: 8px; margin-top: 6px; }
+        .mob-feat-actions .action-btn { width: 30px; height: 30px; background: var(--bg-card); border-radius: 50%; display: flex; justify-content: center; align-items: center; border: 1px solid var(--border); color: var(--text-main); box-shadow: 0 2px 8px rgba(0,0,0,0.05); }
+
+        .menu-divider { border-top: 1px solid var(--border); margin: 15px 0; }
         .mobile-settings-group { display: flex; flex-direction: column; gap: 20px; }
-        .mobile-theme-toggle { display: flex; align-items: center; gap: 15px; font-size: 14px; opacity: 0.7; transition: 0.3s; color: inherit; cursor: pointer; text-transform: uppercase;}
+        .mobile-theme-toggle { display: flex; align-items: center; gap: 15px; font-size: 14px; font-weight: 500; opacity: 0.8; transition: 0.3s; color: inherit; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;}
         .mobile-theme-toggle:hover { opacity: 1; color: var(--gold-muted); }
         .mobile-theme-toggle svg { width: 22px; height: 22px; stroke: currentColor; fill: none; stroke-width: 1.5; }
         
-        .btn-mob-order { border: 1px solid var(--gold-muted); padding: 12px; border-radius: 4px; text-align: center; color: var(--gold-muted) !important; font-size: 14px; font-weight: 600; margin-top: 20px; text-transform: uppercase; text-decoration: none;}
+        .btn-mob-order { border: 1px solid var(--gold-muted); padding: 14px; border-radius: 40px; text-align: center; color: var(--gold-muted) !important; font-size: 15px; font-weight: 600; margin-top: 10px; text-transform: uppercase; text-decoration: none; letter-spacing: 1.5px;}
 
-        .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 4500; opacity: 0; visibility: hidden; transition: 0.5s; backdrop-filter: blur(10px); }
+        .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 4500; opacity: 0; visibility: hidden; transition: 0.5s ease; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); }
         .menu-overlay.active { opacity: 1; visibility: visible; }
 
         /* --- CART DRAWER --- */
-        .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 5500; opacity: 0; visibility: hidden; transition: 0.4s ease; backdrop-filter: blur(3px); touch-action: none; overscroll-behavior: contain; }
+        .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 5500; opacity: 0; visibility: hidden; transition: 0.4s ease; backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px); touch-action: none; overscroll-behavior: contain; }
         .cart-overlay.active { opacity: 1; visibility: visible; }
 
-        .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 420px; height: 100vh; background: var(--bg-body); z-index: 5501; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.3); }
+        .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 440px; height: 100vh; background: var(--glass-bg); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 5501; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; border-left: 1px solid var(--border); box-shadow: -10px 0 40px rgba(0,0,0,0.2); }
         .cart-drawer.active { right: 0; }
         
         .cart-header { display: flex; align-items: center; justify-content: space-between; padding: 30px 40px; border-bottom: 1px solid var(--border); }
-        .cart-header h2 { font-family: 'Playfair Display'; font-size: 24px; color: var(--text-main); font-weight: 400; text-transform: uppercase; letter-spacing: 1px; margin: 0;}
-        .cart-close { background: none; border: none; color: var(--text-main); font-size: 28px; cursor: pointer; opacity: 0.6; transition: 0.3s; line-height: 1; display: flex; align-items: center; justify-content: center; padding: 10px; margin: -10px; }
-        .cart-close:hover { opacity: 1; color: var(--gold-muted); transform: rotate(90deg); }
+        .cart-header h2 { font-family: 'Playfair Display', serif; font-size: 26px; color: var(--text-main); font-weight: 500; text-transform: uppercase; letter-spacing: 1px; margin: 0;}
+        .cart-close { background: none; border: none; color: var(--text-main); font-size: 32px; font-weight: 300; cursor: pointer; opacity: 0.6; transition: 0.3s; line-height: 1; display: flex; align-items: center; justify-content: center; padding: 10px; margin: -10px; }
+        .cart-close:hover { opacity: 1; color: var(--danger); transform: rotate(90deg); }
 
         .cart-body { flex-grow: 1; padding: 30px 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; }
-        .cart-empty-msg { text-align: center; opacity: 0.5; font-size: 14px; margin-top: 40px; font-weight: 300; }
+        .cart-empty-msg { text-align: center; color: var(--text-muted); font-size: 15px; margin-top: 50px; font-weight: 400; }
 
         .cart-item { display: flex; gap: 20px; align-items: center; }
-        .cart-item-img { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border); }
-        .cart-item-info { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; }
-        .cart-item-title { font-size: 13px; font-weight: 500; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
-        .cart-item-variant { font-size: 11px; color: var(--text-main); opacity: 0.5; }
-        .cart-item-price { font-size: 13px; font-weight: 600; color: var(--gold-muted); margin-top: 4px; }
+        .cart-item-img { width: 90px; height: 90px; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); }
+        .cart-item-info { flex-grow: 1; display: flex; flex-direction: column; gap: 6px; }
+        .cart-item-title { font-size: 14px; font-weight: 600; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
+        .cart-item-variant { font-size: 12px; color: var(--text-muted); }
+        .cart-item-price { font-size: 15px; font-weight: 600; color: var(--gold-muted); margin-top: 4px; }
         
-        .cart-item-remove { background: none; border: none; color: var(--text-main); opacity: 0.4; cursor: pointer; transition: 0.3s; padding: 15px; margin: -15px; /* Увеличенная зона клика */ }
-        .cart-item-remove:hover { opacity: 1; color: var(--danger); }
-        .cart-item-remove svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none;}
+        .cart-item-remove { background: none; border: none; color: var(--text-muted); cursor: pointer; transition: 0.3s; padding: 15px; margin: -15px; }
+        .cart-item-remove:hover { color: var(--danger); }
+        .cart-item-remove svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; pointer-events: none;}
 
-        .cart-footer { padding: 30px 40px; border-top: 1px solid var(--border); background: var(--bg-card); display: flex; flex-direction: column; gap: 20px; }
-        .cart-subtotal { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
-        .cart-subtotal-val { color: var(--gold-muted); font-size: 18px; font-weight: 600; }
-        .btn-checkout { background: var(--gold-muted); color: #000; border: none; padding: 16px; width: 100%; font-family: 'Inter'; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 2px; cursor: pointer; transition: 0.3s; }
-        .btn-checkout:hover { background: #d4af37; filter: brightness(1.1); }
+        .cart-footer { padding: 30px 40px; border-top: 1px solid var(--border); background: rgba(0,0,0,0.02); display: flex; flex-direction: column; gap: 24px; }
+        [data-theme="dark"] .cart-footer { background: rgba(255,255,255,0.02); }
+        .cart-subtotal { display: flex; justify-content: space-between; align-items: center; font-size: 15px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+        .cart-subtotal-val { color: var(--gold-muted); font-size: 22px; font-weight: 600; }
+        .btn-checkout { background: var(--text-main); color: var(--bg-body); border: none; padding: 18px; width: 100%; font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600; text-transform: uppercase; letter-spacing: 2px; border-radius: 8px; cursor: pointer; transition: 0.3s; }
+        .btn-checkout:hover { opacity: 0.9; transform: translateY(-2px); box-shadow: 0 8px 20px rgba(0,0,0,0.15); }
 
         /* --- MARQUEE --- */
         .marquee-wrapper { background: var(--bg-card); border-y: 1px solid var(--border); padding: 25px 0; overflow: hidden; position: relative; cursor: grab; user-select: none; }
         .marquee-wrapper:active { cursor: grabbing; }
         .marquee-track { display: flex; width: max-content; will-change: transform; pointer-events: auto; }
-        .marquee-item { font-family: 'Playfair Display'; font-size: 15px; font-style: italic; margin: 0 40px; color: var(--gold-muted); text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; transition: color 0.3s ease, transform 0.3s ease; cursor: pointer; }
-        .marquee-item:hover { color: var(--text-main); transform: scale(1.1); }
+        .marquee-item { font-family: 'Playfair Display', serif; font-size: 16px; font-style: italic; margin: 0 40px; color: var(--gold-muted); text-transform: uppercase; letter-spacing: 2px; white-space: nowrap; transition: color 0.3s ease, transform 0.3s ease; cursor: pointer; }
+        .marquee-item:hover { color: var(--text-main); transform: scale(1.05); }
 
         /* --- COLLAGE CATALOG --- */
-        .art-collage { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 320px; gap: 24px; padding: 100px 6% 80px; max-width: 1700px; margin: 0 auto; }
-        .collage-tile { position: relative; overflow: hidden; background: var(--bg-card); border: 1px solid var(--border); border-radius: 4px; opacity: 0; transform: translateY(30px); transition: 1s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; }
+        .art-collage { display: grid; grid-template-columns: repeat(4, 1fr); grid-auto-rows: 320px; gap: 24px; padding: 120px 6% 80px; max-width: 1700px; margin: 0 auto; }
+        .collage-tile { position: relative; overflow: hidden; background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; opacity: 0; transform: translateY(30px); transition: 1s cubic-bezier(0.16, 1, 0.3, 1); cursor: pointer; box-shadow: var(--glass-shadow); }
         .collage-tile.visible { opacity: 1; transform: translateY(0); }
-        .collage-tile img { width: 100%; height: 100%; object-fit: cover; opacity: 0.85; transition: 1.8s ease; }
-        .collage-tile:hover img { transform: scale(1.05); opacity: 1; filter: brightness(1.1); }
+        .collage-tile img { width: 100%; height: 100%; object-fit: cover; opacity: 0.9; transition: 1.2s cubic-bezier(0.25, 1, 0.5, 1); }
+        .collage-tile:hover img { transform: scale(1.05); opacity: 1; }
         
-        .collage-label { position: absolute; bottom: 24px; left: 24px; font-family: 'Playfair Display'; font-style: italic; font-size: 26px; color: #fff; text-shadow: 0 2px 15px rgba(0,0,0,0.7); z-index: 2; }
-        .collage-tile::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 40%); pointer-events: none; }
+        .collage-label { position: absolute; bottom: 24px; left: 24px; font-family: 'Playfair Display', serif; font-style: italic; font-size: 28px; color: #fff; text-shadow: 0 4px 20px rgba(0,0,0,0.8); z-index: 2; }
+        .collage-tile::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%); pointer-events: none; }
 
         .t-rings { grid-column: span 2; grid-row: span 2; } 
         .t-earrings { grid-column: span 1; grid-row: span 1; }
@@ -214,13 +259,17 @@
         /* --- FLOATING CONTACT BUTTON --- */
         .floating-contact {
             position: fixed; bottom: 40px; right: 40px; z-index: 4000;
-            background: var(--bg-card); border: 1px solid var(--border);
-            padding: 12px 20px; border-radius: 50px; display: flex; align-items: center; gap: 10px;
-            color: var(--gold-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
-            opacity: 0.35; transition: all 0.4s ease; box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-            text-decoration: none; backdrop-filter: blur(10px);
+            background: var(--bg-card); 
+            backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); 
+            border: 1px solid var(--gold-muted);
+            padding: 14px 24px; border-radius: 50px; display: flex; align-items: center; gap: 12px;
+            color: var(--gold-muted); font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px;
+            opacity: 0.95; transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); 
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            text-decoration: none; 
         }
-        .floating-contact:hover { opacity: 1; transform: translateY(-5px); box-shadow: 0 10px 25px rgba(0,0,0,0.3); border-color: var(--gold-muted); }
+        [data-theme="light"] .floating-contact { box-shadow: 0 8px 30px rgba(0,0,0,0.15); }
+        .floating-contact:hover { opacity: 1; transform: translateY(-5px); color: var(--text-main); border-color: var(--text-main); }
 
         /* --- MOBILE ADAPTATION --- */
         @media (max-width: 1024px) {
@@ -228,42 +277,52 @@
             .nav-left { display: none; }
             
             .header-left { gap: 16px; }
-            .burger { display: flex; }
+            .burger { display: flex; position: relative; z-index: 4001; }
             
             .search-input { width: 60px; font-size: 10px; padding-right: 14px; }
             .search-input:focus { width: 100px; }
             .search-icon { width: 10px; height: 10px; bottom: 7px; }
 
-            .bv-logo span:first-child { font-size: 26px; }
+            .bv-logo span:first-child { font-size: 28px; }
             .bv-logo span:last-child { font-size: 6px; letter-spacing: 5px; }
 
-            .art-collage { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 240px; gap: 16px; padding: 80px 5% 40px; }
+            .art-collage { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 240px; gap: 16px; padding: 100px 5% 40px; }
             .t-rings { grid-column: span 2; grid-row: span 2; }
             .t-earrings, .t-bracelets, .t-wedding { grid-column: span 1; grid-row: span 1; }
             .t-neck { grid-column: span 1; grid-row: span 2; }
             .t-crosses { grid-column: span 2; grid-row: span 1; }
 
-            header { height: 75px; }
+            header { height: 75px; padding: 0 4%; border-radius: 0; width: 100%; top: 0;}
+            header.scrolled { 
+                height: 60px; 
+                top: 10px; 
+                width: 96%; 
+                border-radius: 30px; 
+                padding: 0 5%;
+            }
 
-            .floating-contact { bottom: 20px; right: 20px; padding: 14px; border-radius: 50%; opacity: 0.6; }
+            .floating-contact { bottom: 20px; right: 20px; padding: 14px; border-radius: 50%; opacity: 0.95; }
             .floating-contact span { display: none; }
-            .floating-contact svg { width: 22px; height: 22px; }
+            .floating-contact svg { width: 24px; height: 24px; }
             
-            .cart-header { padding: 20px; }
-            .cart-body { padding: 20px; gap: 16px; }
-            .cart-footer { padding: 20px; }
+            .cart-header { padding: 20px 24px; }
+            .cart-body { padding: 20px 24px; gap: 20px; }
+            .cart-footer { padding: 20px 24px; }
+            
+            .marquee-wrapper { padding: 12px 0; }
+            .marquee-item { font-size: 12px; margin: 0 20px; }
         }
 
         /* --- FOOTER & COPYRIGHT --- */
         footer { padding: 70px 6% 40px; background: var(--bg-card); border-top: 1px solid var(--border); }
-        .contact-icon { width: 16px; height: 16px; fill: var(--gold-muted); flex-shrink: 0; }
-        .contact-link { display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; transition: 0.3s; font-size: 13px; }
+        .contact-icon { width: 18px; height: 18px; fill: var(--gold-muted); flex-shrink: 0; }
+        .contact-link { display: flex; align-items: center; gap: 12px; text-decoration: none; color: inherit; transition: 0.3s; font-size: 14px; }
         .contact-link:hover { color: var(--gold-muted); }
         .phone-num { font-family: 'Inter', sans-serif; font-weight: 500; }
         
-        .sub-footer { padding: 20px 6%; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; justify-content: center; align-items: center; font-size: 10px; color: var(--text-main); opacity: 0.5; font-family: 'Inter', sans-serif; letter-spacing: 0.5px; }
-        .sub-footer a { color: inherit; text-decoration: none; transition: opacity 0.3s; font-weight: 500; }
-        .sub-footer a:hover { opacity: 1; color: var(--gold-muted); }
+        .sub-footer { padding: 20px 6%; background: var(--bg-card); border-top: 1px solid var(--border); display: flex; justify-content: center; align-items: center; font-size: 11px; color: var(--text-muted); font-family: 'Inter', sans-serif; letter-spacing: 0.5px; }
+        .sub-footer a { color: var(--text-main); text-decoration: none; transition: opacity 0.3s; font-weight: 500; }
+        .sub-footer a:hover { color: var(--gold-muted); }
     </style>
 </head>
 <body>
@@ -277,8 +336,7 @@
             <button class="cart-close" id="cartClose" onclick="toggleCart()">×</button>
         </div>
         
-        <div class="cart-body" id="cartBody">
-            </div>
+        <div class="cart-body" id="cartBody"></div>
 
         <div class="cart-footer">
             <div class="cart-subtotal">
@@ -304,31 +362,18 @@
                     </span>
                     
                     <div class="mega-menu">
-                        
                         <div class="mega-col-1">
-                            <div class="mega-cat-item active" data-target="mc-chains" data-img="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=600" data-title="Золотий ланцюг класичний" data-price="45000" data-old="52000" data-status="in-stock">
+                            <div class="mega-cat-item active" data-target="mc-chains" data-img="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=600" data-title="Золотий ланцюг класичний" data-price="45000" data-status="in-stock">
                                 <svg class="mega-cat-icon" viewBox="0 0 24 24"><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M18.63 13A17.89 17.89 0 0 1 18 8"/><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M18 8a6 6 0 0 0-9.33-5"/></svg>
                                 <span data-i18n="mc1">Золоті ланцюжки</span>
                             </div>
-                            <div class="mega-cat-item" data-target="mc-cords" data-img="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=600" data-title="Шовковий шнурок" data-price="12000" data-old="" data-status="in-stock">
-                                <svg class="mega-cat-icon" viewBox="0 0 24 24"><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="15" x2="20" y2="15"/><line x1="10" y1="3" x2="8" y2="21"/><line x1="16" y1="3" x2="14" y2="21"/></svg>
-                                <span data-i18n="mc2">Ювелірні шнурки</span>
-                            </div>
-                            <div class="mega-cat-item" data-target="mc-crosses" data-img="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=600" data-title="Хрестик з діамантами" data-price="85000" data-old="90000" data-status="out-stock">
-                                <svg class="mega-cat-icon" viewBox="0 0 24 24"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-                                <span data-i18n="mc3">Золоті хрестики</span>
-                            </div>
-                            <div class="mega-cat-item" data-target="mc-rings" data-img="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=600" data-title="Каблучка Солітер" data-price="125000" data-old="" data-status="in-stock">
+                            <div class="mega-cat-item" data-target="mc-rings" data-img="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=600" data-title="Каблучка Солітер" data-price="125000" data-status="in-stock">
                                 <svg class="mega-cat-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v4"/></svg>
                                 <span data-i18n="mc4">Каблучки</span>
                             </div>
-                            <div class="mega-cat-item" data-target="mc-earrings" data-img="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=600" data-title="Сережки пусети" data-price="34000" data-old="40000" data-status="in-stock">
+                            <div class="mega-cat-item" data-target="mc-earrings" data-img="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=600" data-title="Сережки пусети" data-price="34000" data-status="in-stock">
                                 <svg class="mega-cat-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/></svg>
                                 <span data-i18n="mc5">Сережки</span>
-                            </div>
-                            <div class="mega-cat-item" data-target="mc-bracelets" data-img="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=600" data-title="Браслет Скорпіон" data-price="95000" data-old="120000" data-status="in-stock">
-                                <svg class="mega-cat-icon" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="10" rx="2" ry="2"/><path d="M12 7v10"/></svg>
-                                <span data-i18n="mc6">Браслети</span>
                             </div>
                         </div>
 
@@ -336,42 +381,17 @@
                             <a href="#" class="sub-cat-link">Ланцюжки для дітей</a>
                             <a href="#" class="sub-cat-link">Жіночі ланцюжки</a>
                             <a href="#" class="sub-cat-link">Чоловічі ланцюги</a>
-                            <a href="#" class="sub-cat-link">Золоті ланцюжки до 50 гр.</a>
-                            <a href="#" class="sub-cat-link">Золотий ланцюг від 50 гр.</a>
-                            <a href="#" class="view-all-link">Усі товари →</a>
-                        </div>
-                        <div class="mega-col-2" id="mc-cords">
-                            <a href="#" class="sub-cat-link">Шкіряні шнурки</a>
-                            <a href="#" class="sub-cat-link">Шовкові шнурки</a>
-                            <a href="#" class="sub-cat-link">Шнурки з золотими вставками</a>
-                            <a href="#" class="view-all-link">Усі товари →</a>
-                        </div>
-                        <div class="mega-col-2" id="mc-crosses">
-                            <a href="#" class="sub-cat-link">Чоловічі хрестики</a>
-                            <a href="#" class="sub-cat-link">Жіночі хрестики</a>
-                            <a href="#" class="sub-cat-link">Дитячі хрестики</a>
-                            <a href="#" class="sub-cat-link">Ексклюзивні хрести</a>
                             <a href="#" class="view-all-link">Усі товари →</a>
                         </div>
                         <div class="mega-col-2" id="mc-rings">
                             <a href="#" class="sub-cat-link">Каблучки для заручин</a>
                             <a href="#" class="sub-cat-link">Обручки</a>
                             <a href="#" class="sub-cat-link">Каблучки з діамантами</a>
-                            <a href="#" class="sub-cat-link">Чоловічі печатки</a>
                             <a href="#" class="view-all-link">Усі товари →</a>
                         </div>
                         <div class="mega-col-2" id="mc-earrings">
                             <a href="#" class="sub-cat-link">Сережки-пусети</a>
                             <a href="#" class="sub-cat-link">Довгі сережки</a>
-                            <a href="#" class="sub-cat-link">Сережки з камінням</a>
-                            <a href="#" class="view-all-link">Усі товари →</a>
-                        </div>
-                        <div class="mega-col-2" id="mc-bracelets">
-                            <a href="#" class="sub-cat-link">Золоті браслети до 30 гр</a>
-                            <a href="#" class="sub-cat-link">Золоті браслети від 30 гр</a>
-                            <a href="#" class="sub-cat-link">Шкіряні браслети з золотом</a>
-                            <a href="#" class="sub-cat-link">Браслети з натуральних каменів</a>
-                            <a href="#" class="sub-cat-link">Шовкові браслети з вставками</a>
                             <a href="#" class="view-all-link">Усі товари →</a>
                         </div>
 
@@ -380,8 +400,9 @@
                                 <div class="preview-img-wrap">
                                     <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=600" id="megaPreviewImg" alt="Preview">
                                     <div class="card-actions">
-                                        <button class="action-btn" title="Add to Wishlist" onclick="event.preventDefault();"><svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg></button>
-                                        <button class="action-btn" title="Add to Cart" onclick="event.preventDefault(); addToCart('preview_item', document.getElementById('megaPreviewTitle').innerText, 'Золото 585', parseInt(document.getElementById('megaPreviewPrice').getAttribute('data-raw-price')), document.getElementById('megaPreviewImg').src)"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg></button>
+                                        <button class="action-btn" title="Add to Cart" onclick="event.preventDefault(); addToCart('preview_item', document.getElementById('megaPreviewTitle').innerText, 'Золото 585', parseInt(document.getElementById('megaPreviewPrice').getAttribute('data-raw-price')), document.getElementById('megaPreviewImg').src)">
+                                            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                                        </button>
                                     </div>
                                 </div>
                                 <div class="preview-info">
@@ -389,12 +410,10 @@
                                     <span class="preview-title" id="megaPreviewTitle">Золотий ланцюг класичний</span>
                                     <div class="preview-price-wrap">
                                         <span class="price-current" id="megaPreviewPrice" data-raw-price="45000">45 000 ₴</span>
-                                        <span class="price-old" id="megaPreviewOldPrice">52 000 ₴</span>
                                     </div>
                                 </div>
                             </a>
                         </div>
-
                     </div>
                 </div>
 
@@ -405,6 +424,10 @@
                 <input type="text" class="search-input" data-i18n-placeholder="search_ph" placeholder="Пошук...">
                 <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
             </div>
+            
+            <div class="search-box mobile-search" style="display: none;" onclick="document.querySelector('.mob-search-input').focus()">
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; stroke: var(--text-main); fill: none; opacity: 0.8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
         </div>
 
         <a href="#home" class="bv-logo">
@@ -412,10 +435,6 @@
         </a>
 
         <div class="header-right">
-            
-            <div class="search-box mobile-search" style="display: none;"> <svg class="icon-btn" viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: var(--text-main); fill: none;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
-            </div>
-
             <div id="themeToggle" class="icon-btn desktop-only">
                 <svg id="themeIcon" viewBox="0 0 24 24">
                     <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
@@ -431,9 +450,6 @@
                     <div class="dropdown-item" onclick="changeLang('uk')"><img src="https://flagcdn.com/ua.svg" class="flag"> UA</div>
                     <div class="dropdown-item" onclick="changeLang('en')"><img src="https://flagcdn.com/gb.svg" class="flag"> EN</div>
                     <div class="dropdown-item" onclick="changeLang('ru')"><img src="https://flagcdn.com/ru.svg" class="flag"> RU</div>
-                    <div class="dropdown-item" onclick="changeLang('de')"><img src="https://flagcdn.com/de.svg" class="flag"> DE</div>
-                    <div class="dropdown-item" onclick="changeLang('tr')"><img src="https://flagcdn.com/tr.svg" class="flag"> TR</div>
-                    <div class="dropdown-item" onclick="changeLang('bg')"><img src="https://flagcdn.com/bg.svg" class="flag"> BG</div>
                 </div>
             </div>
 
@@ -451,74 +467,113 @@
                 <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
                 <span class="cart-badge">0</span>
             </a>
-
         </div>
     </header>
 
     <nav class="side-menu" id="sideMenu">
         
         <div style="position: relative; margin-bottom: 10px;">
-            <input type="text" class="search-input" data-i18n-placeholder="search_ph" placeholder="Пошук..." style="width: 100%; font-size: 14px; padding: 10px 30px 10px 0; border-bottom-color: var(--gold-muted);">
-            <svg class="search-icon" viewBox="0 0 24 24" style="bottom: 12px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <input type="text" class="search-input mob-search-input" data-i18n-placeholder="search_ph" placeholder="Пошук..." style="width: 100%; font-size: 15px; padding: 12px 30px 12px 0; border-bottom-color: var(--gold-muted);">
+            <svg class="search-icon" viewBox="0 0 24 24" style="bottom: 15px;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
         </div>
 
-        <a href="#home" data-i18n="m1" onclick="toggleMenu()" class="mob-menu-title" style="font-size: 16px; opacity: 0.7; font-family: 'Inter'; font-weight: 300;">Головна</a>
+        <a href="#home" data-i18n="m1" onclick="toggleMenu()" class="mob-menu-title">Головна</a>
         
         <div>
-            <div class="mob-menu-title" onclick="toggleAccordion('mobCatList', 'mobCatArrow')" style="font-size: 16px; opacity: 0.7; font-family: 'Inter'; font-weight: 300;">
+            <div class="mob-menu-title" onclick="toggleAccordion('mobCatList', 'mobCatArrow')">
                 <span data-i18n="m2">Каталог</span>
-                <svg id="mobCatArrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold-muted)" stroke-width="2" class="transition-transform duration-300"><path d="M6 9l6 6 6-6"/></svg>
+                <svg id="mobCatArrow" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="var(--gold-muted)" stroke-width="2" class="transition-transform duration-300"><path d="M6 9l6 6 6-6"/></svg>
             </div>
-            <div class="mob-accordion-list" id="mobCatList">
-                <a href="#rings" data-i18n="mc1">Золоті ланцюжки</a>
-                <a href="#earrings" data-i18n="mc2">Ювелірні шнурки</a>
-                <a href="#bracelets" data-i18n="mc3">Золоті хрестики</a>
-                <a href="#necklaces" data-i18n="mc4">Каблучки</a>
-                <a href="#wedding" data-i18n="mc5">Сережки</a>
-                <a href="#crosses" data-i18n="mc6">Браслети</a>
+            
+            <div class="mob-accordion-list" id="mobCatList" style="gap: 0; padding-left: 0;">
+                
+                <div class="mob-nested-wrap">
+                    <div class="mob-nested-title" onclick="toggleAccordion('mob-sub-1', 'mob-arrow-1')">
+                        <span data-i18n="mc1">Золоті ланцюжки</span>
+                        <svg id="mob-arrow-1" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="transition-transform duration-300"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+                    <div class="mob-nested-list" id="mob-sub-1">
+                        <div class="mob-sub-links">
+                            <a href="#" class="sub-cat-link">Ланцюжки для дітей</a>
+                            <a href="#" class="sub-cat-link">Жіночі ланцюжки</a>
+                            <a href="#" class="sub-cat-link">Чоловічі ланцюги</a>
+                            <a href="#" class="sub-cat-link" style="color: var(--gold-muted); font-weight: 500;">Усі товари →</a>
+                        </div>
+                        <a href="#" class="mob-feat-prod">
+                            <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=400" class="mob-feat-img">
+                            <div class="mob-feat-info">
+                                <span class="mob-feat-title">Ланцюг класичний</span>
+                                <span class="mob-feat-price">45 000 ₴</span>
+                                <div class="mob-feat-actions">
+                                    <button class="action-btn" onclick="event.preventDefault(); addToCart('m_p1', 'Ланцюг класичний', 'Золото', 45000, 'https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=400')"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line></svg></button>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="mob-nested-wrap">
+                    <div class="mob-nested-title" onclick="toggleAccordion('mob-sub-2', 'mob-arrow-2')">
+                        <span data-i18n="mc4">Каблучки</span>
+                        <svg id="mob-arrow-2" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="transition-transform duration-300"><path d="M6 9l6 6 6-6"/></svg>
+                    </div>
+                    <div class="mob-nested-list" id="mob-sub-2">
+                        <div class="mob-sub-links">
+                            <a href="#" class="sub-cat-link">Для заручин</a>
+                            <a href="#" class="sub-cat-link">Обручки</a>
+                            <a href="#" class="sub-cat-link">З діамантами</a>
+                            <a href="#" class="sub-cat-link" style="color: var(--gold-muted); font-weight: 500;">Усі товари →</a>
+                        </div>
+                        <a href="#" class="mob-feat-prod">
+                            <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=400" class="mob-feat-img">
+                            <div class="mob-feat-info">
+                                <span class="mob-feat-title">Каблучка Солітер</span>
+                                <span class="mob-feat-price">125 000 ₴</span>
+                                <div class="mob-feat-actions">
+                                    <button class="action-btn" onclick="event.preventDefault(); addToCart('m_p2', 'Каблучка Солітер', 'Золото', 125000, 'https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=400')"><svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line></svg></button>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+
             </div>
         </div>
 
-        <a href="#footer" data-i18n="m4" onclick="toggleMenu()" class="mob-menu-title" style="font-size: 16px; opacity: 0.7; font-family: 'Inter'; font-weight: 300;">Контакти</a>
+        <a href="#footer" data-i18n="m4" onclick="toggleMenu()" class="mob-menu-title">Контакти</a>
         
         <div class="menu-divider"></div>
 
         <div class="mobile-settings-group">
-            
             <div>
-                <div class="mob-menu-title" onclick="toggleAccordion('mobLangList', 'mobLangArrow')" style="font-size: 14px; opacity: 0.7; font-family: 'Inter'; font-weight: 300; text-transform: uppercase;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
+                <div class="mob-menu-title" onclick="toggleAccordion('mobLangList', 'mobLangArrow')" style="font-size: 15px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
                         <img src="https://flagcdn.com/ua.svg" class="flag" id="currentFlagMob">
-                        <span>МОВА:</span> <span id="currentLangLabelMob" style="font-weight: 500;">UA</span>
+                        <span>МОВА:</span> <span id="currentLangLabelMob" style="font-weight: 600; color: var(--text-main);">UA</span>
                     </div>
                     <svg id="mobLangArrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold-muted)" stroke-width="2" class="transition-transform duration-300"><path d="M6 9l6 6 6-6"/></svg>
                 </div>
-                <div class="mob-accordion-list" id="mobLangList">
+                <div class="mob-accordion-list" id="mobLangList" style="margin-top: 10px;">
                     <div class="dropdown-item" onclick="changeLang('uk')"><img src="https://flagcdn.com/ua.svg" class="flag"> UA</div>
                     <div class="dropdown-item" onclick="changeLang('en')"><img src="https://flagcdn.com/gb.svg" class="flag"> EN</div>
                     <div class="dropdown-item" onclick="changeLang('ru')"><img src="https://flagcdn.com/ru.svg" class="flag"> RU</div>
-                    <div class="dropdown-item" onclick="changeLang('de')"><img src="https://flagcdn.com/de.svg" class="flag"> DE</div>
-                    <div class="dropdown-item" onclick="changeLang('tr')"><img src="https://flagcdn.com/tr.svg" class="flag"> TR</div>
-                    <div class="dropdown-item" onclick="changeLang('bg')"><img src="https://flagcdn.com/bg.svg" class="flag"> BG</div>
                 </div>
             </div>
 
-            <div id="themeToggleMob" class="mobile-theme-toggle">
-                <svg viewBox="0 0 24 24">
-                    <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
+            <div id="themeToggleMob" class="mobile-theme-toggle" style="font-size: 15px;">
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px;"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
                 <span data-i18n="theme_mob">Змінити тему</span>
             </div>
 
             <div>
-                <div class="mob-menu-title" onclick="toggleAccordion('mobUserList', 'mobUserArrow')" style="font-size: 14px; opacity: 0.7; font-family: 'Inter'; font-weight: 300; text-transform: uppercase;">
-                    <div style="display: flex; align-items: center; gap: 10px;">
-                        <svg viewBox="0 0 24 24" style="width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                <div class="mob-menu-title" onclick="toggleAccordion('mobUserList', 'mobUserArrow')" style="font-size: 15px;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 1.5;"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                         <span data-i18n="login_mob_title">КАБІНЕТ</span>
                     </div>
                     <svg id="mobUserArrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--gold-muted)" stroke-width="2" class="transition-transform duration-300"><path d="M6 9l6 6 6-6"/></svg>
                 </div>
-                <div class="mob-accordion-list" id="mobUserList">
+                <div class="mob-accordion-list" id="mobUserList" style="margin-top: 10px;">
                     <a href="#login" data-i18n="login" onclick="toggleMenu()">Увійти</a>
                     <a href="#register" data-i18n="register" onclick="toggleMenu()">Зареєструватися</a>
                 </div>
@@ -526,7 +581,6 @@
             
             <a href="#art-collage" class="btn-order btn-mob-order w-full mt-4" data-i18n="m_order" onclick="toggleMenu()">Замовити</a>
         </div>
-        
     </nav>
 
     <main>
@@ -544,27 +598,22 @@
                 <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=800" alt="Rings">
                 <div class="collage-label" data-i18n="mc4">Каблучки</div>
             </div>
-
             <div class="collage-tile t-earrings" onclick="location.href='#earrings'">
                 <img src="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=800" alt="Earrings">
                 <div class="collage-label" data-i18n="mc5">Сережки</div>
             </div>
-
             <div class="collage-tile t-bracelets" onclick="location.href='#bracelets'">
                 <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=800" alt="Bracelets">
                 <div class="collage-label" data-i18n="mc6">Браслети</div>
             </div>
-
             <div class="collage-tile t-neck" onclick="location.href='#necklaces'">
                 <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=800" alt="Necklaces">
                 <div class="collage-label" data-i18n="mc1">Ланцюжки</div>
             </div>
-
             <div class="collage-tile t-wedding" onclick="location.href='#wedding'">
                 <img src="https://images.unsplash.com/photo-1583939003579-730e3918a45a?q=80&w=800" alt="Wedding">
                 <div class="collage-label" data-i18n="c5">Обручки</div>
             </div>
-
             <div class="collage-tile t-crosses" onclick="location.href='#crosses'">
                 <img src="https://images.unsplash.com/photo-1611591437281-460bfbe1220a?q=80&w=800" alt="Crosses" style="object-position: center 30%;">
                 <div class="collage-label" data-i18n="mc3">Хрестики</div>
@@ -579,31 +628,29 @@
 
     <footer id="footer">
         <div class="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-12">
-            
             <div class="flex flex-col items-start text-left">
                 <div class="bv-logo mb-6 relative !static !transform-none !items-start !opacity-100 !pointer-events-auto">
                     <span>BV</span><span>jewelry</span>
                 </div>
                 <p class="text-[11px] text-gray-500 max-w-xs font-light leading-relaxed" data-i18n="f_desc">
-                    Ювелірне ательє вищої категорії складності.<br>Традиції якості з 1984 року.
+                    BV Jewelry — Ми не просто створюємо прикраси - ми формуємо сімейні цінності у золоті.
                 </p>
             </div>
-            
             <div class="flex flex-col items-center md:items-end gap-5">
-                <a href="https://www.google.com/maps/dir//45.344444,28.834444" target="_blank" class="contact-link opacity-70">
-                    <svg class="contact-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-                    <span data-i18n="f_addr">Ізмаїл: Торгова, 68 • Покровська, 57</span>
-                </a>
-
+                <div class="flex flex-col items-center md:items-end gap-3">
+                    <a href="https://share.google/R7G0tiXeqXrx98Uhi" target="_blank" class="contact-link opacity-80">
+                        <svg class="contact-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                        <span data-i18n="f_addr1">м. Ізмаїл, вул. Торгова, 68</span>
+                    </a>
+                    <a href="https://share.google/4fE0MoAJwCdCr4igT" target="_blank" class="contact-link opacity-80">
+                        <svg class="contact-icon" viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+                        <span data-i18n="f_addr2">м. Ізмаїл, вул. Покровська, 57</span>
+                    </a>
+                </div>
                 <a href="tel:+380634540901" class="contact-link phone-num">
                     <svg class="contact-icon" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
                     <span>+38 063 45 40 901</span>
                 </a>
-
-                <div class="flex gap-8 mt-2">
-                    <a href="https://t.me/bv_jewelry_izmail" target="_blank" class="contact-link opacity-60"><svg class="contact-icon" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm4.64 6.8c-.15 1.58-.8 5.42-1.13 7.19-.14.75-.42 1-.68 1.03-.58.05-1.02-.38-1.58-.75-.88-.58-1.38-.94-2.23-1.5-.99-.65-.35-1.01.22-1.59.15-.15 2.71-2.48 2.76-2.69.01-.03.01-.14-.07-.2-.08-.06-.19-.04-.27-.02-.11.02-1.93 1.23-5.46 3.62-.51.35-.98.52-1.4.51-.46-.01-1.35-.26-2.01-.48-.81-.27-1.45-.42-1.39-.89.03-.24.37-.48 1.02-.73 4-1.74 6.67-2.88 8.01-3.41 3.81-1.52 4.6-1.78 5.12-1.79.11 0 .37.03.54.17.14.12.18.28.2.4.02.07.02.15.02.24z"/></svg><span>Telegram</span></a>
-                    <a href="https://www.instagram.com/bv.jewelry_izmail" target="_blank" class="contact-link opacity-60"><svg class="contact-icon" viewBox="0 0 24 24"><path d="M7.8 2h8.4C19.4 2 22 4.6 22 7.8v8.4a5.8 5.8 0 0 1-5.8 5.8H7.8C4.6 22 2 19.4 2 16.2V7.8A5.8 5.8 0 0 1 7.8 2m-.2 2A3.6 3.6 0 0 0 4 7.6v8.8A3.6 3.6 0 0 0 7.6 20h8.8a3.6 3.6 0 0 0 3.6-3.6V7.6A3.6 3.6 0 0 0 16.4 4H7.6m4.4 3.5a4.5 4.5 0 1 1 0 9 4.5 4.5 0 0 1 0-9m0 2a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5m4.75-1.5a1.25 1.25 0 1 1 0 2.5 1.25 1.25 0 0 1 0-2.5z"/></svg><span>Instagram</span></a>
-                </div>
             </div>
         </div>
     </footer>
@@ -616,12 +663,12 @@
         document.getElementById('currentYear').textContent = new Date().getFullYear();
 
         const i18n = {
-            uk: { m1: "Головна", m2: "Каталог", m4: "Контакти", m_order: "Замовити", mc1: "Золоті ланцюжки", mc2: "Ювелірні шнурки", mc3: "Золоті хрестики", mc4: "Каблучки", mc5: "Сережки", mc6: "Браслети", float_btn: "Написати нам", f_addr: "Ізмаїл: Торгова, 68 • Покровська, 57", f_desc: "Ювелірне ательє вищої категорії складності.<br>Традиції якості з 1984 року.", cats: ["Ланцюжки", "Сережки", "Браслети", "Кольє", "Хрестики"], login: "Увійти", register: "Зареєструватися", search_ph: "Пошук...", theme_mob: "Змінити тему", login_mob_title: "КАБІНЕТ", cart_title: "Кошик", cart_subtotal: "Підсумок:", cart_checkout: "Оформити замовлення", cart_empty: "Ваш кошик порожній", in_stock: "В наявності", out_stock: "Немає в наявності" },
-            en: { m1: "Home", m2: "Catalog", m4: "Contacts", m_order: "Order", mc1: "Gold Chains", mc2: "Jewelry Cords", mc3: "Gold Crosses", mc4: "Rings", mc5: "Earrings", mc6: "Bracelets", float_btn: "Message us", f_addr: "Izmail: Torgova, 68 • Pokrovska, 57", f_desc: "High-end jewelry atelier.<br>Traditions of quality since 1984.", cats: ["Chains", "Earrings", "Bracelets", "Necklaces", "Crosses"], login: "Log in", register: "Register", search_ph: "Search...", theme_mob: "Change Theme", login_mob_title: "PROFILE", cart_title: "Cart", cart_subtotal: "Subtotal:", cart_checkout: "Checkout", cart_empty: "Your cart is empty", in_stock: "In stock", out_stock: "Out of stock" },
-            ru: { m1: "Главная", m2: "Каталог", m4: "Контакты", m_order: "Заказать", mc1: "Золотые цепи", mc2: "Ювелирные шнурки", mc3: "Золотые крестики", mc4: "Кольца", mc5: "Серьги", mc6: "Браслеты", float_btn: "Написать нам", f_addr: "Измаил: Торговая, 68 • Покровская, 57", f_desc: "Ювелирное ателье высшей категории сложности.<br>Традиции качества с 1984 года.", cats: ["Цепи", "Серьги", "Браслеты", "Колье", "Крестики"], login: "Войти", register: "Регистрация", search_ph: "Поиск...", theme_mob: "Сменить тему", login_mob_title: "КАБИНЕТ", cart_title: "Корзина", cart_subtotal: "Итого:", cart_checkout: "Оформить заказ", cart_empty: "Ваша корзина пуста", in_stock: "В наличии", out_stock: "Нет в наличии" },
-            de: { m1: "Startseite", m2: "Katalog", m4: "Kontakte", m_order: "Bestellen", mc1: "Goldketten", mc2: "Schmuckkordeln", mc3: "Goldkreuze", mc4: "Ringe", mc5: "Ohrringe", mc6: "Armbänder", float_btn: "Schreiben Sie uns", f_addr: "Izmail: Torgova, 68 • Pokrovska, 57", f_desc: "High-End-Schmuckatelier.<br>Qualitätstraditionen seit 1984.", cats: ["Ketten", "Ohrringe", "Armbänder", "Halsketten", "Kreuze"], login: "Anmelden", register: "Registrieren", search_ph: "Suche...", theme_mob: "Thema ändern", login_mob_title: "PROFIL", cart_title: "Warenkorb", cart_subtotal: "Zwischensumme:", cart_checkout: "Zur Kasse", cart_empty: "Ihr Warenkorb ist leer", in_stock: "Auf Lager", out_stock: "Ausverkauft" },
-            tr: { m1: "Ana Sayfa", m2: "Katalog", m4: "İletişim", m_order: "Sipariş Ver", mc1: "Altın Zincirler", mc2: "Takı Kordonları", mc3: "Altın Haçlar", mc4: "Yüzükler", mc5: "Küpeler", mc6: "Bileklikler", float_btn: "Bize yazın", f_addr: "İzmail: Torgova, 68 • Pokrovska, 57", f_desc: "Üst düzey takı atölyesi.<br>1984'ten beri kalite gelenekleri.", cats: ["Zincirler", "Küpeler", "Bileklikler", "Kolyeler", "Haçlar"], login: "Giriş yap", register: "Kayıt ol", search_ph: "Arama...", theme_mob: "Temayı Değiştir", login_mob_title: "PROFİL", cart_title: "Sepet", cart_subtotal: "Ara Toplam:", cart_checkout: "Ödeme yap", cart_empty: "Sepetiniz boş", in_stock: "Stokta var", out_stock: "Stokta yok" },
-            bg: { m1: "Начало", m2: "Каталог", m4: "Контакти", m_order: "Поръчай", mc1: "Златни верижки", mc2: "Бижутерски корди", mc3: "Златни кръстчета", mc4: "Пръстени", mc5: "Обеци", mc6: "Гривни", float_btn: "Пишете ни", f_addr: "Измаил: Търговска, 68 • Покровска, 57", f_desc: "Ателие за бижута от висок клас.<br>Традиции в качеството от 1984 г.", cats: ["Верижки", "Обеци", "Гривни", "Колиета", "Кръстчета"], login: "Вход", register: "Регистрация", search_ph: "Търсене...", theme_mob: "Смяна на тема", login_mob_title: "ПРОФИЛ", cart_title: "Количка", cart_subtotal: "Общо:", cart_checkout: "Плащане", cart_empty: "Количката ви е празна", in_stock: "В наличност", out_stock: "Изчерпано" }
+            uk: { m1: "Головна", m2: "Каталог", m4: "Контакти", m_order: "Замовити", mc1: "Золоті ланцюжки", mc2: "Ювелірні шнурки", mc3: "Золоті хрестики", mc4: "Каблучки", mc5: "Сережки", mc6: "Браслети", c5: "Обручки", float_btn: "Написати нам", f_desc: "BV Jewelry — Ми не просто створюємо прикраси - ми формуємо сімейні цінності у золоті.", f_addr1: "м. Ізмаїл, вул. Торгова, 68", f_addr2: "м. Ізмаїл, вул. Покровська, 57", cats: ["Ланцюжки", "Сережки", "Браслети", "Кольє", "Хрестики"], login: "Увійти", register: "Зареєструватися", search_ph: "Пошук...", theme_mob: "Змінити тему", login_mob_title: "КАБІНЕТ", cart_title: "Кошик", cart_subtotal: "Підсумок:", cart_checkout: "Оформити замовлення", cart_empty: "Ваш кошик порожній", in_stock: "В наявності", out_stock: "Немає в наявності" },
+            en: { m1: "Home", m2: "Catalog", m4: "Contacts", m_order: "Order", mc1: "Gold Chains", mc2: "Jewelry Cords", mc3: "Gold Crosses", mc4: "Rings", mc5: "Earrings", mc6: "Bracelets", c5: "Wedding Bands", float_btn: "Message us", f_desc: "BV Jewelry — We don't just create jewelry - we forge family values in gold.", f_addr1: "Izmail, Torgova str., 68", f_addr2: "Izmail, Pokrovska str., 57", cats: ["Chains", "Earrings", "Bracelets", "Necklaces", "Crosses"], login: "Log in", register: "Register", search_ph: "Search...", theme_mob: "Change Theme", login_mob_title: "PROFILE", cart_title: "Cart", cart_subtotal: "Subtotal:", cart_checkout: "Checkout", cart_empty: "Your cart is empty", in_stock: "In stock", out_stock: "Out of stock" },
+            ru: { m1: "Главная", m2: "Каталог", m4: "Контакты", m_order: "Заказать", mc1: "Золотые цепи", mc2: "Ювелирные шнурки", mc3: "Золотые крестики", mc4: "Кольца", mc5: "Серьги", mc6: "Браслеты", c5: "Обручальные", float_btn: "Написать нам", f_desc: "BV Jewelry — Мы не просто создаем украшения - мы формируем семейные ценности в золоте.", f_addr1: "г. Измаил, ул. Торговая, 68", f_addr2: "г. Измаил, ул. Покровская, 57", cats: ["Цепи", "Серьги", "Браслеты", "Колье", "Крестики"], login: "Войти", register: "Регистрация", search_ph: "Поиск...", theme_mob: "Сменить тему", login_mob_title: "КАБИНЕТ", cart_title: "Корзина", cart_subtotal: "Итого:", cart_checkout: "Оформить заказ", cart_empty: "Ваша корзина пуста", in_stock: "В наличии", out_stock: "Нет в наличии" },
+            de: { m1: "Startseite", m2: "Katalog", m4: "Kontakte", m_order: "Bestellen", mc1: "Goldketten", mc2: "Schmuckkordeln", mc3: "Goldkreuze", mc4: "Ringe", mc5: "Ohrringe", mc6: "Armbänder", c5: "Eheringe", float_btn: "Schreiben Sie uns", f_desc: "BV Jewelry — Wir kreieren nicht nur Schmuck - wir schmieden Familienwerte in Gold.", f_addr1: "Izmail, Torgova Str., 68", f_addr2: "Izmail, Pokrovska Str., 57", cats: ["Ketten", "Ohrringe", "Armbänder", "Halsketten", "Kreuze"], login: "Anmelden", register: "Registrieren", search_ph: "Suche...", theme_mob: "Thema ändern", login_mob_title: "PROFIL", cart_title: "Warenkorb", cart_subtotal: "Zwischensumme:", cart_checkout: "Zur Kasse", cart_empty: "Ihr Warenkorb ist leer", in_stock: "Auf Lager", out_stock: "Ausverkauft" },
+            tr: { m1: "Ana Sayfa", m2: "Katalog", m4: "İletişim", m_order: "Sipariş Ver", mc1: "Altın Zincirler", mc2: "Takı Kordonları", mc3: "Altın Haçlar", mc4: "Yüzükler", mc5: "Küpeler", mc6: "Bileklikler", c5: "Alyanslar", float_btn: "Bize yazın", f_desc: "BV Jewelry — Sadece mücevher yaratmıyoruz - aile değerlerini altınla şekillendiriyoruz.", f_addr1: "İzmail, Torgova cad., 68", f_addr2: "İzmail, Pokrovska cad., 57", cats: ["Zincirler", "Küpeler", "Bileklikler", "Kolyeler", "Haçlar"], login: "Giriş yap", register: "Kayıt ol", search_ph: "Arama...", theme_mob: "Temayı Değiştir", login_mob_title: "PROFİL", cart_title: "Sepet", cart_subtotal: "Ara Toplam:", cart_checkout: "Ödeme yap", cart_empty: "Sepetiniz boş", in_stock: "Stokta var", out_stock: "Stokta yok" },
+            bg: { m1: "Начало", m2: "Каталог", m4: "Контакти", m_order: "Поръчай", mc1: "Златни верижки", mc2: "Бижутерски корди", mc3: "Златни кръстчета", mc4: "Пръстени", mc5: "Обеци", mc6: "Гривни", c5: "Брачни халки", float_btn: "Пишете ни", f_desc: "BV Jewelry — Ние не просто създаваме бижута - ние изковаваме семейни ценности в злато.", f_addr1: "Измаил, ул. Търговска, 68", f_addr2: "Измаил, ул. Покровска, 57", cats: ["Верижки", "Обеци", "Гривни", "Колиета", "Кръстчета"], login: "Вход", register: "Регистрация", search_ph: "Търсене...", theme_mob: "Смяна на тема", login_mob_title: "ПРОФИЛ", cart_title: "Количка", cart_subtotal: "Общо:", cart_checkout: "Плащане", cart_empty: "Количката ви е празна", in_stock: "В наличност", out_stock: "Изчерпано" }
         };
 
         const flags = { uk: "ua", en: "gb", ru: "ru", de: "de", tr: "tr", bg: "bg" };
@@ -656,67 +703,41 @@
             const list = document.getElementById(listId);
             const arrow = document.getElementById(arrowId);
             list.classList.toggle('open');
-            arrow.style.transform = list.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+            if(arrow) arrow.style.transform = list.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
         }
 
-        // --- ЛОГИКА МЕГА-МЕНЮ (Смена карточки превью) ---
-        const formatter = new Intl.NumberFormat('uk-UA', { style: 'currency', currency: 'UAH', maximumFractionDigits: 0 });
-        
+        // Десктоп Мега меню логика
         document.querySelectorAll('.mega-cat-item').forEach(item => {
             item.addEventListener('mouseenter', () => {
-                // Сбрасываем активный класс у всех категорий и подкатегорий
                 document.querySelectorAll('.mega-cat-item').forEach(i => i.classList.remove('active'));
                 document.querySelectorAll('.mega-col-2').forEach(p => p.classList.remove('active'));
-                
-                // Активируем текущие
                 item.classList.add('active');
-                const targetId = item.getAttribute('data-target');
-                document.getElementById(targetId).classList.add('active');
-
-                // Обновляем данные карточки превью
-                const img = item.getAttribute('data-img');
-                const title = item.getAttribute('data-title');
-                const price = item.getAttribute('data-price');
-                const oldPrice = item.getAttribute('data-old');
-                const status = item.getAttribute('data-status');
-                const lang = localStorage.getItem('bv_lang') || 'uk';
-
-                document.getElementById('megaPreviewImg').src = img;
-                document.getElementById('megaPreviewTitle').innerText = title;
+                document.getElementById(item.getAttribute('data-target')).classList.add('active');
                 
+                const lang = localStorage.getItem('bv_lang') || 'uk';
+                const formatter = new Intl.NumberFormat(lang === 'en' ? 'en-US' : 'uk-UA', { style: 'currency', currency: lang === 'en' ? 'USD' : 'UAH', maximumFractionDigits: 0 });
+
+                document.getElementById('megaPreviewImg').src = item.getAttribute('data-img');
+                document.getElementById('megaPreviewTitle').innerText = item.getAttribute('data-title');
                 const priceElem = document.getElementById('megaPreviewPrice');
-                priceElem.innerText = formatter.format(price);
-                priceElem.setAttribute('data-raw-price', price);
-
-                const oldPriceElem = document.getElementById('megaPreviewOldPrice');
-                if (oldPrice) {
-                    oldPriceElem.innerText = formatter.format(oldPrice);
-                    oldPriceElem.style.display = 'inline';
-                } else {
-                    oldPriceElem.style.display = 'none';
-                }
-
+                priceElem.innerText = formatter.format(item.getAttribute('data-price'));
+                priceElem.setAttribute('data-raw-price', item.getAttribute('data-price'));
                 const statusElem = document.getElementById('megaPreviewStatus');
-                statusElem.className = 'status-label ' + status;
-                statusElem.innerText = status === 'in-stock' ? i18n[lang].in_stock : i18n[lang].out_stock;
+                statusElem.className = 'status-label ' + item.getAttribute('data-status');
+                statusElem.innerText = item.getAttribute('data-status') === 'in-stock' ? i18n[lang].in_stock : i18n[lang].out_stock;
             });
         });
 
-        // --- ЛОГИКА КОРЗИНЫ ---
+        // Корзина
         let cart = [];
+        const formatterCart = new Intl.NumberFormat('uk-UA', { style: 'currency', currency: 'UAH', maximumFractionDigits: 0 });
 
         function addToCart(id, title, variant, price, img) {
             const existingItem = cart.find(item => item.id === id);
-            if (existingItem) {
-                existingItem.qty += 1;
-            } else {
-                cart.push({ id, title, variant, price, img, qty: 1 });
-            }
+            if (existingItem) existingItem.qty += 1;
+            else cart.push({ id, title, variant, price, img, qty: 1 });
             renderCart();
-            
-            if (!document.getElementById('cartDrawer').classList.contains('active')) {
-                toggleCart();
-            }
+            if (!document.getElementById('cartDrawer').classList.contains('active')) toggleCart();
         }
 
         function removeFromCart(id) {
@@ -728,15 +749,13 @@
             const cartBody = document.getElementById('cartBody');
             const cartBadges = document.querySelectorAll('.cart-badge');
             const subtotalVal = document.querySelector('.cart-subtotal-val');
-            
-            let total = 0;
-            let totalQty = 0;
+            let total = 0, totalQty = 0;
             cartBody.innerHTML = '';
 
             if (cart.length === 0) {
                 const lang = localStorage.getItem('bv_lang') || 'uk';
                 cartBody.innerHTML = `<div class="cart-empty-msg" data-i18n="cart_empty">${i18n[lang].cart_empty}</div>`;
-                subtotalVal.innerText = formatter.format(0);
+                subtotalVal.innerText = formatterCart.format(0);
                 cartBadges.forEach(b => b.innerText = '0');
                 return;
             }
@@ -744,42 +763,27 @@
             cart.forEach(item => {
                 total += item.price * item.qty;
                 totalQty += item.qty;
-                
-                const itemHTML = `
+                cartBody.insertAdjacentHTML('beforeend', `
                     <div class="cart-item">
-                        <img src="${item.img}" alt="${item.title}" class="cart-item-img">
+                        <img src="${item.img}" class="cart-item-img">
                         <div class="cart-item-info">
                             <span class="cart-item-title">${item.title}</span>
                             <span class="cart-item-variant">${item.variant}</span>
-                            <span class="cart-item-price">${formatter.format(item.price)} ${item.qty > 1 ? `(x${item.qty})` : ''}</span>
+                            <span class="cart-item-price">${formatterCart.format(item.price)} ${item.qty > 1 ? `(x${item.qty})` : ''}</span>
                         </div>
-                        <button class="cart-item-remove" onclick="removeFromCart('${item.id}')" title="Remove">
-                            <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                        </button>
+                        <button class="cart-item-remove" onclick="removeFromCart('${item.id}')"><svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
                     </div>
-                `;
-                cartBody.insertAdjacentHTML('beforeend', itemHTML);
+                `);
             });
-
-            subtotalVal.innerText = formatter.format(total);
+            subtotalVal.innerText = formatterCart.format(total);
             cartBadges.forEach(b => b.innerText = totalQty);
         }
 
         function toggleCart() {
-            const cartDrawer = document.getElementById('cartDrawer');
-            const cartOverlay = document.getElementById('cartOverlay');
-            
-            cartDrawer.classList.toggle('active');
-            cartOverlay.classList.toggle('active');
-            
-            if (!sideMenu.classList.contains('active')) {
-                document.body.classList.toggle('no-scroll');
-            }
+            document.getElementById('cartDrawer').classList.toggle('active');
+            document.getElementById('cartOverlay').classList.toggle('active');
+            if (!sideMenu.classList.contains('active')) document.body.classList.toggle('no-scroll');
         }
-
-        const themeToggleBtn = document.getElementById('themeToggle');
-        const themeToggleBtnMob = document.getElementById('themeToggleMob'); 
-        const themeIcon = document.getElementById('themeIcon');
 
         const sunSVG = `<circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>`;
         const moonSVG = `<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>`;
@@ -787,109 +791,58 @@
         function toggleTheme() {
             const html = document.documentElement;
             const currentTheme = html.getAttribute('data-theme');
-            
-            if (currentTheme === 'light') {
-                html.setAttribute('data-theme', 'dark');
-                themeIcon.innerHTML = sunSVG; 
-            } else {
-                html.setAttribute('data-theme', 'light');
-                themeIcon.innerHTML = moonSVG; 
-            }
+            html.setAttribute('data-theme', currentTheme === 'light' ? 'dark' : 'light');
+            document.getElementById('themeIcon').innerHTML = currentTheme === 'light' ? sunSVG : moonSVG;
         }
-        themeToggleBtn.onclick = toggleTheme;
-        themeToggleBtnMob.onclick = toggleTheme; 
+        document.getElementById('themeToggle').onclick = toggleTheme;
+        document.getElementById('themeToggleMob').onclick = toggleTheme; 
 
-        // --- ЛОГИКА КАРУСЕЛИ ---
+        // Карусель
         let scrollPos = 0, velocity = 0, targetVelocity = 0;
-
         function updateMarquee() {
             scrollPos -= velocity;
-            const singleSetWidth = track.scrollWidth / 4;
-            
-            if (scrollPos <= -singleSetWidth) {
-                scrollPos += singleSetWidth;
-            } else if (scrollPos > 0) {
-                scrollPos -= singleSetWidth;
-            }
-            
+            if (scrollPos <= -track.scrollWidth / 4) scrollPos += track.scrollWidth / 4;
+            else if (scrollPos > 0) scrollPos -= track.scrollWidth / 4;
             track.style.transform = `translateX(${scrollPos}px)`;
-            
             velocity += (targetVelocity - velocity) * 0.08; 
             targetVelocity *= 0.92; 
-
-            if (Math.abs(velocity) < 0.01 && Math.abs(targetVelocity) < 0.01) {
-                velocity = 0;
-                targetVelocity = 0;
-            }
-
+            if (Math.abs(velocity) < 0.01 && Math.abs(targetVelocity) < 0.01) { velocity = 0; targetVelocity = 0; }
             requestAnimationFrame(updateMarquee);
         }
 
-        wrapper.addEventListener('wheel', (e) => {
-            e.preventDefault(); 
-            targetVelocity = e.deltaY * 0.15; 
-        }, { passive: false });
-
-        let isDragging = false;
+        wrapper.addEventListener('wheel', (e) => { e.preventDefault(); targetVelocity = e.deltaY * 0.15; }, { passive: false });
+        let isDragging = false, touchStart = 0;
         wrapper.onmousedown = () => isDragging = true;
         window.onmouseup = () => isDragging = false;
-        
-        wrapper.onmousemove = (e) => {
-            if (isDragging) {
-                targetVelocity = -(e.movementX * 1.2); 
-            }
-        }; 
-
-        let touchStart = 0;
+        wrapper.onmousemove = (e) => { if (isDragging) targetVelocity = -(e.movementX * 1.2); }; 
         wrapper.ontouchstart = (e) => touchStart = e.touches[0].clientX;
-        wrapper.ontouchmove = (e) => {
-            const delta = e.touches[0].clientX - touchStart;
-            targetVelocity = -(delta * 1.0);
-            touchStart = e.touches[0].clientX;
-        };
+        wrapper.ontouchmove = (e) => { targetVelocity = -(e.touches[0].clientX - touchStart) * 1.0; touchStart = e.touches[0].clientX; };
 
         function setLang(lang) {
             document.querySelectorAll('[data-i18n]').forEach(el => el.innerHTML = i18n[lang][el.dataset.i18n] || el.innerHTML);
             document.querySelectorAll('[data-i18n-placeholder]').forEach(el => el.placeholder = i18n[lang][el.dataset.i18nPlaceholder] || el.placeholder);
-            
-            const catsArr = i18n[lang].cats;
-            const fullList = [...catsArr, ...catsArr, ...catsArr, ...catsArr];
-            
-            track.innerHTML = fullList.map(cat => `<span class="marquee-item" onclick="location.href='#art-collage'">${cat}</span>`).join('');
+            track.innerHTML = [...i18n[lang].cats, ...i18n[lang].cats, ...i18n[lang].cats, ...i18n[lang].cats].map(cat => `<span class="marquee-item" onclick="location.href='#art-collage'">${cat}</span>`).join('');
             localStorage.setItem('bv_lang', lang);
             
-            // Update status in mega menu preview
             const statusElem = document.getElementById('megaPreviewStatus');
             if (statusElem) {
                 const isInstock = statusElem.classList.contains('in-stock');
                 statusElem.innerText = isInstock ? i18n[lang].in_stock : i18n[lang].out_stock;
             }
-            
-            renderCart(); // Re-render to update empty message language
+            renderCart(); 
         }
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
-        }, { threshold: 0.1 });
+        const observer = new IntersectionObserver((entries) => { entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); }); }, { threshold: 0.1 });
         document.querySelectorAll('.collage-tile').forEach(el => observer.observe(el));
 
         window.onload = () => { 
             const savedLang = localStorage.getItem('bv_lang') || 'uk';
-            
             document.getElementById('currentFlag').src = `https://flagcdn.com/${flags[savedLang]}.svg`;
             document.getElementById('currentLangLabel').innerText = savedLang.toUpperCase();
             document.getElementById('currentFlagMob').src = `https://flagcdn.com/${flags[savedLang]}.svg`;
             document.getElementById('currentLangLabelMob').innerText = savedLang.toUpperCase();
-            
-            if (document.documentElement.getAttribute('data-theme') === 'light') {
-                themeIcon.innerHTML = moonSVG;
-            } else {
-                themeIcon.innerHTML = sunSVG;
-            }
-
-            setLang(savedLang); 
-            renderCart(); 
-            updateMarquee(); 
+            document.getElementById('themeIcon').innerHTML = document.documentElement.getAttribute('data-theme') === 'light' ? moonSVG : sunSVG;
+            setLang(savedLang); renderCart(); updateMarquee(); 
         };
         window.onscroll = () => document.getElementById('header').classList.toggle('scrolled', window.pageYOffset > 50);
     </script>
