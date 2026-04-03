@@ -29,6 +29,7 @@
 
         * { margin: 0; padding: 0; box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         body { background-color: var(--bg-body); font-family: 'Inter', sans-serif; color: var(--text-main); overflow-x: hidden; transition: background 0.5s ease; display: flex; flex-direction: column; min-height: 100vh; }
+        body.no-scroll { overflow: hidden; }
         main { flex-grow: 1; }
 
         /* --- HEADER --- */
@@ -130,6 +131,37 @@
         .menu-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 4500; opacity: 0; visibility: hidden; transition: 0.5s; backdrop-filter: blur(10px); }
         .menu-overlay.active { opacity: 1; visibility: visible; }
 
+        /* --- CART DRAWER --- */
+        .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 5500; opacity: 0; visibility: hidden; transition: 0.4s ease; backdrop-filter: blur(3px); }
+        .cart-overlay.active { opacity: 1; visibility: visible; }
+
+        .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 420px; height: 100vh; background: var(--bg-body); z-index: 5501; transition: 0.5s cubic-bezier(0.16, 1, 0.3, 1); display: flex; flex-direction: column; border-left: 1px solid var(--border); box-shadow: -10px 0 30px rgba(0,0,0,0.3); }
+        .cart-drawer.active { right: 0; }
+        
+        .cart-header { display: flex; align-items: center; justify-content: space-between; padding: 30px 40px; border-bottom: 1px solid var(--border); }
+        .cart-header h2 { font-family: 'Playfair Display'; font-size: 24px; color: var(--text-main); font-weight: 400; text-transform: uppercase; letter-spacing: 1px; }
+        .cart-close { background: none; border: none; color: var(--text-main); font-size: 28px; cursor: pointer; opacity: 0.6; transition: 0.3s; line-height: 1; display: flex; align-items: center; justify-content: center; }
+        .cart-close:hover { opacity: 1; color: var(--gold-muted); transform: rotate(90deg); }
+
+        .cart-body { flex-grow: 1; padding: 30px 40px; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; }
+        
+        /* Cart Item Styles */
+        .cart-item { display: flex; gap: 20px; align-items: center; }
+        .cart-item-img { width: 80px; height: 80px; object-fit: cover; border-radius: 4px; border: 1px solid var(--border); }
+        .cart-item-info { flex-grow: 1; display: flex; flex-direction: column; gap: 4px; }
+        .cart-item-title { font-size: 13px; font-weight: 500; color: var(--text-main); text-transform: uppercase; letter-spacing: 0.5px; }
+        .cart-item-variant { font-size: 11px; color: var(--text-main); opacity: 0.5; }
+        .cart-item-price { font-size: 13px; font-weight: 600; color: var(--gold-muted); margin-top: 4px; }
+        .cart-item-remove { background: none; border: none; color: var(--text-main); opacity: 0.4; cursor: pointer; transition: 0.3s; }
+        .cart-item-remove:hover { opacity: 1; color: #ff4d4d; }
+        .cart-item-remove svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+        .cart-footer { padding: 30px 40px; border-top: 1px solid var(--border); background: var(--bg-card); display: flex; flex-direction: column; gap: 20px; }
+        .cart-subtotal { display: flex; justify-content: space-between; align-items: center; font-size: 14px; font-weight: 500; text-transform: uppercase; letter-spacing: 1px; }
+        .cart-subtotal-val { color: var(--gold-muted); font-size: 18px; font-weight: 600; }
+        .btn-checkout { background: var(--gold-muted); color: #000; border: none; padding: 16px; width: 100%; font-family: 'Inter'; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: 1.5px; border-radius: 2px; cursor: pointer; transition: 0.3s; }
+        .btn-checkout:hover { background: #d4af37; filter: brightness(1.1); }
+
         /* --- MARQUEE --- */
         .marquee-wrapper { background: var(--bg-card); border-y: 1px solid var(--border); padding: 25px 0; overflow: hidden; position: relative; cursor: grab; user-select: none; }
         .marquee-wrapper:active { cursor: grabbing; }
@@ -191,6 +223,10 @@
             .floating-contact { bottom: 20px; right: 20px; padding: 14px; border-radius: 50%; opacity: 0.6; }
             .floating-contact span { display: none; }
             .floating-contact svg { width: 22px; height: 22px; }
+            
+            .cart-header { padding: 20px; }
+            .cart-body { padding: 20px; }
+            .cart-footer { padding: 20px; }
         }
 
         /* --- FOOTER & COPYRIGHT --- */
@@ -208,6 +244,48 @@
 <body>
 
     <div class="menu-overlay" id="overlay"></div>
+
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="cart-header">
+            <h2 data-i18n="cart_title">Кошик</h2>
+            <button class="cart-close" id="cartClose" onclick="toggleCart()">&times;</button>
+        </div>
+        
+        <div class="cart-body">
+            <div class="cart-item">
+                <img src="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=150" alt="Ring" class="cart-item-img">
+                <div class="cart-item-info">
+                    <span class="cart-item-title">Solitaire Diamond</span>
+                    <span class="cart-item-variant">Біле золото 585, Розмір 16.5</span>
+                    <span class="cart-item-price">$1,250</span>
+                </div>
+                <button class="cart-item-remove" title="Remove">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            
+            <div class="cart-item">
+                <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=150" alt="Necklace" class="cart-item-img">
+                <div class="cart-item-info">
+                    <span class="cart-item-title">Pearl Elegance</span>
+                    <span class="cart-item-variant">Срібло 925, Перли</span>
+                    <span class="cart-item-price">$890</span>
+                </div>
+                <button class="cart-item-remove" title="Remove">
+                    <svg viewBox="0 0 24 24"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+        </div>
+
+        <div class="cart-footer">
+            <div class="cart-subtotal">
+                <span data-i18n="cart_subtotal">Підсумок:</span>
+                <span class="cart-subtotal-val">$2,140</span>
+            </div>
+            <button class="btn-checkout" data-i18n="cart_checkout">Оформити замовлення</button>
+        </div>
+    </div>
 
     <header id="header">
         
@@ -291,9 +369,9 @@
                 </div>
             </div>
 
-            <a href="#cart" class="icon-btn">
+            <a href="#" onclick="event.preventDefault(); toggleCart();" class="icon-btn">
                 <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
-                <span class="cart-badge">0</span>
+                <span class="cart-badge">2</span>
             </a>
 
             <div class="dropdown-wrapper desktop-only">
@@ -306,7 +384,6 @@
                 </div>
             </div>
         </div>
-
     </header>
 
     <nav class="side-menu" id="sideMenu">
@@ -465,12 +542,12 @@
         document.getElementById('currentYear').textContent = new Date().getFullYear();
 
         const i18n = {
-            uk: { m1: "Головна", m2: "Каталог", m4: "Контакти", m_order: "Замовити", c1: "Персні", c2: "Сережки", c3: "Браслети", c4: "Кольє", c5: "Обручки", c6: "Хрестики", float_btn: "Написати нам", f_addr: "Ізмаїл: Торгова, 68 • Покровська, 57", f_desc: "Ювелірне ательє вищої категорії складності.<br>Традиції якості з 1984 року.", cats: ["Каблучки", "Сережки", "Браслети", "Кольє", "Хрестики"], login: "Увійти", register: "Зареєструватися", search_ph: "Пошук...", theme_mob: "Змінити тему", login_mob_title: "КАБІНЕТ" },
-            en: { m1: "Home", m2: "Catalog", m4: "Contacts", m_order: "Order", c1: "Rings", c2: "Earrings", c3: "Bracelets", c4: "Necklaces", c5: "Wedding Bands", c6: "Crosses", float_btn: "Message us", f_addr: "Izmail: Torgova, 68 • Pokrovska, 57", f_desc: "High-end jewelry atelier.<br>Traditions of quality since 1984.", cats: ["Rings", "Earrings", "Bracelets", "Necklaces", "Crosses"], login: "Log in", register: "Register", search_ph: "Search...", theme_mob: "Change Theme", login_mob_title: "PROFILE" },
-            ru: { m1: "Главная", m2: "Каталог", m4: "Контакты", m_order: "Заказать", c1: "Кольца", c2: "Серьги", c3: "Браслеты", c4: "Колье", c5: "Обручальные", c6: "Крестики", float_btn: "Написать нам", f_addr: "Измаил: Торговая, 68 • Покровская, 57", f_desc: "Ювелирное ателье высшей категории сложности.<br>Традиции качества с 1984 года.", cats: ["Кольца", "Серьги", "Браслеты", "Колье", "Крестики"], login: "Войти", register: "Регистрация", search_ph: "Поиск...", theme_mob: "Сменить тему", login_mob_title: "КАБИНЕТ" },
-            de: { m1: "Startseite", m2: "Katalog", m4: "Kontakte", m_order: "Bestellen", c1: "Ringe", c2: "Ohrringe", c3: "Armbänder", c4: "Halsketten", c5: "Eheringe", c6: "Kreuze", float_btn: "Schreiben Sie uns", f_addr: "Izmail: Torgova, 68 • Pokrovska, 57", f_desc: "High-End-Schmuckatelier.<br>Qualitätstraditionen seit 1984.", cats: ["Ringe", "Ohrringe", "Armbänder", "Halsketten", "Kreuze"], login: "Anmelden", register: "Registrieren", search_ph: "Suche...", theme_mob: "Thema ändern", login_mob_title: "PROFIL" },
-            tr: { m1: "Ana Sayfa", m2: "Katalog", m4: "İletişim", m_order: "Sipariş Ver", c1: "Yüzükler", c2: "Küpeler", c3: "Bileklikler", c4: "Kolyeler", c5: "Alyanslar", c6: "Haçlar", float_btn: "Bize yazın", f_addr: "İzmail: Torgova, 68 • Pokrovska, 57", f_desc: "Üst düzey takı atölyesi.<br>1984'ten beri kalite gelenekleri.", cats: ["Yüzükler", "Küpeler", "Bileklikler", "Kolyeler", "Haçlar"], login: "Giriş yap", register: "Kayıt ol", search_ph: "Arama...", theme_mob: "Temayı Değiştir", login_mob_title: "PROFİL" },
-            bg: { m1: "Начало", m2: "Каталог", m4: "Контакти", m_order: "Поръчай", c1: "Пръстени", c2: "Обеци", c3: "Гривни", c4: "Колиета", c5: "Брачни халки", c6: "Кръстчета", float_btn: "Пишете ни", f_addr: "Измаил: Търговска, 68 • Покровска, 57", f_desc: "Ателие за бижута от висок клас.<br>Традиции в качеството от 1984 г.", cats: ["Пръстени", "Обеци", "Гривни", "Колиета", "Кръстчета"], login: "Вход", register: "Регистрация", search_ph: "Търсене...", theme_mob: "Смяна на тема", login_mob_title: "ПРОФИЛ" }
+            uk: { m1: "Головна", m2: "Каталог", m4: "Контакти", m_order: "Замовити", c1: "Персні", c2: "Сережки", c3: "Браслети", c4: "Кольє", c5: "Обручки", c6: "Хрестики", float_btn: "Написати нам", f_addr: "Ізмаїл: Торгова, 68 • Покровська, 57", f_desc: "Ювелірне ательє вищої категорії складності.<br>Традиції якості з 1984 року.", cats: ["Каблучки", "Сережки", "Браслети", "Кольє", "Хрестики"], login: "Увійти", register: "Зареєструватися", search_ph: "Пошук...", theme_mob: "Змінити тему", login_mob_title: "КАБІНЕТ", cart_title: "Кошик", cart_subtotal: "Підсумок:", cart_checkout: "Оформити замовлення" },
+            en: { m1: "Home", m2: "Catalog", m4: "Contacts", m_order: "Order", c1: "Rings", c2: "Earrings", c3: "Bracelets", c4: "Necklaces", c5: "Wedding Bands", c6: "Crosses", float_btn: "Message us", f_addr: "Izmail: Torgova, 68 • Pokrovska, 57", f_desc: "High-end jewelry atelier.<br>Traditions of quality since 1984.", cats: ["Rings", "Earrings", "Bracelets", "Necklaces", "Crosses"], login: "Log in", register: "Register", search_ph: "Search...", theme_mob: "Change Theme", login_mob_title: "PROFILE", cart_title: "Cart", cart_subtotal: "Subtotal:", cart_checkout: "Checkout" },
+            ru: { m1: "Главная", m2: "Каталог", m4: "Контакты", m_order: "Заказать", c1: "Кольца", c2: "Серьги", c3: "Браслеты", c4: "Колье", c5: "Обручальные", c6: "Крестики", float_btn: "Написать нам", f_addr: "Измаил: Торговая, 68 • Покровская, 57", f_desc: "Ювелирное ателье высшей категории сложности.<br>Традиции качества с 1984 года.", cats: ["Кольца", "Серьги", "Браслеты", "Колье", "Крестики"], login: "Войти", register: "Регистрация", search_ph: "Поиск...", theme_mob: "Сменить тему", login_mob_title: "КАБИНЕТ", cart_title: "Корзина", cart_subtotal: "Итого:", cart_checkout: "Оформить заказ" },
+            de: { m1: "Startseite", m2: "Katalog", m4: "Kontakte", m_order: "Bestellen", c1: "Ringe", c2: "Ohrringe", c3: "Armbänder", c4: "Halsketten", c5: "Eheringe", c6: "Kreuze", float_btn: "Schreiben Sie uns", f_addr: "Izmail: Torgova, 68 • Pokrovska, 57", f_desc: "High-End-Schmuckatelier.<br>Qualitätstraditionen seit 1984.", cats: ["Ringe", "Ohrringe", "Armbänder", "Halsketten", "Kreuze"], login: "Anmelden", register: "Registrieren", search_ph: "Suche...", theme_mob: "Thema ändern", login_mob_title: "PROFIL", cart_title: "Warenkorb", cart_subtotal: "Zwischensumme:", cart_checkout: "Zur Kasse" },
+            tr: { m1: "Ana Sayfa", m2: "Katalog", m4: "İletişim", m_order: "Sipariş Ver", c1: "Yüzükler", c2: "Küpeler", c3: "Bileklikler", c4: "Kolyeler", c5: "Alyanslar", c6: "Haçlar", float_btn: "Bize yazın", f_addr: "İzmail: Torgova, 68 • Pokrovska, 57", f_desc: "Üst düzey takı atölyesi.<br>1984'ten beri kalite gelenekleri.", cats: ["Yüzükler", "Küpeler", "Bileklikler", "Kolyeler", "Haçlar"], login: "Giriş yap", register: "Kayıt ol", search_ph: "Arama...", theme_mob: "Temayı Değiştir", login_mob_title: "PROFİL", cart_title: "Sepet", cart_subtotal: "Ara Toplam:", cart_checkout: "Ödeme yap" },
+            bg: { m1: "Начало", m2: "Каталог", m4: "Контакти", m_order: "Поръчай", c1: "Пръстени", c2: "Обеци", c3: "Гривни", c4: "Колиета", c5: "Брачни халки", c6: "Кръстчета", float_btn: "Пишете ни", f_addr: "Измаил: Търговска, 68 • Покровска, 57", f_desc: "Ателие за бижута от висок клас.<br>Традиции в качеството от 1984 г.", cats: ["Пръстени", "Обеци", "Гривни", "Колиета", "Кръстчета"], login: "Вход", register: "Регистрация", search_ph: "Търсене...", theme_mob: "Смяна на тема", login_mob_title: "ПРОФИЛ", cart_title: "Количка", cart_subtotal: "Общо:", cart_checkout: "Плащане" }
         };
 
         const flags = { uk: "ua", en: "gb", ru: "ru", de: "de", tr: "tr", bg: "bg" };
@@ -506,6 +583,20 @@
             const arrow = document.getElementById(arrowId);
             list.classList.toggle('open');
             arrow.style.transform = list.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+        }
+
+        // --- CART TOGGLE LOGIC ---
+        function toggleCart() {
+            const cartDrawer = document.getElementById('cartDrawer');
+            const cartOverlay = document.getElementById('cartOverlay');
+            
+            cartDrawer.classList.toggle('active');
+            cartOverlay.classList.toggle('active');
+            
+            // Prevent body scroll when cart is open, unless sidemenu is already doing it
+            if (!sideMenu.classList.contains('active')) {
+                document.body.classList.toggle('no-scroll');
+            }
         }
 
         const themeToggleBtn = document.getElementById('themeToggle');
