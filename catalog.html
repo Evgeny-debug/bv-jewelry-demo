@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="uk" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Каталог | BV Jewelry</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* --- CORE THEME (Як на головній) --- */
+        :root {
+            --bg-body: #111111; --bg-card: #1c1c1e; --text-main: #f5f5f7;
+            --gold-gradient: linear-gradient(135deg, #fbf2c6 0%, #d4af37 35%, #b68d40 60%, #fbf2c6 100%);
+            --gold-muted: #c5a059; --border: rgba(255, 255, 255, 0.08);
+            --glass-bg: rgba(28, 28, 30, 0.75); --glass-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            --danger: #ff453a; --success: #32d74b;
+        }
+        body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+        /* --- HEADER & FOOTER (Ідентичні) --- */
+        header { position: fixed; top: 0; left: 50%; transform: translateX(-50%); width: 100%; height: 90px; display: flex; align-items: center; justify-content: space-between; padding: 0 6%; z-index: 4000; transition: 0.5s; background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, transparent 100%); }
+        header.scrolled { height: 70px; top: 15px; width: 94%; max-width: 1600px; border-radius: 35px; background: var(--glass-bg); backdrop-filter: blur(20px); border: 1px solid var(--border); box-shadow: var(--glass-shadow); padding: 0 40px; }
+        
+        .bv-logo { position: absolute; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; text-decoration: none; }
+        .bv-logo span:first-child { font-family: 'Playfair Display'; font-size: clamp(24px, 4vw, 36px); font-weight: 600; background: var(--gold-gradient); -webkit-background-clip: text; -webkit-text-fill-color: transparent; letter-spacing: 2px; }
+        .bv-logo span:last-child { font-size: 8px; text-transform: uppercase; letter-spacing: 5px; color: var(--text-main); }
+        .header-phone-link { display: flex; align-items: center; gap: 8px; text-decoration: none; color: var(--text-main); font-size: 13px; font-weight: 500; opacity: 0.8; transition: 0.3s; }
+        .header-phone-link:hover { opacity: 1; color: var(--gold-muted); }
+
+        /* --- КАТАЛОГ СТИЛІ --- */
+        .filter-btn { padding: 8px 20px; border: 1px solid var(--border); border-radius: 40px; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; cursor: pointer; transition: 0.3s; color: var(--text-main); opacity: 0.7; }
+        .filter-btn:hover { opacity: 1; border-color: var(--gold-muted); }
+        .filter-btn.active { background: rgba(197, 160, 89, 0.1); border-color: var(--gold-muted); color: var(--gold-muted); opacity: 1; }
+
+        .product-card { background: var(--bg-card); border: 1px solid var(--border); border-radius: 16px; overflow: hidden; transition: 0.4s; display: flex; flex-direction: column; group; }
+        .product-card:hover { transform: translateY(-5px); box-shadow: var(--glass-shadow); border-color: rgba(197, 160, 89, 0.3); }
+        .product-img-wrap { position: relative; width: 100%; aspect-ratio: 1; overflow: hidden; background: #000; }
+        .product-img { width: 100%; height: 100%; object-fit: cover; transition: 0.6s; opacity: 0.9; }
+        .product-card:hover .product-img { transform: scale(1.05); opacity: 1; }
+        
+        .add-to-cart-btn { position: absolute; bottom: 15px; right: 15px; width: 40px; height: 40px; border-radius: 50%; background: var(--glass-bg); backdrop-filter: blur(10px); border: 1px solid var(--border); display: flex; justify-content: center; align-items: center; color: var(--text-main); cursor: pointer; transition: 0.3s; opacity: 0; transform: translateY(10px); }
+        .product-card:hover .add-to-cart-btn { opacity: 1; transform: translateY(0); }
+        .add-to-cart-btn:hover { background: var(--gold-muted); color: #000; border-color: var(--gold-muted); }
+
+        /* CART DRAWER (Базові стилі для роботи) */
+        .cart-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 5500; opacity: 0; visibility: hidden; transition: 0.4s; backdrop-filter: blur(5px); }
+        .cart-overlay.active { opacity: 1; visibility: visible; }
+        .cart-drawer { position: fixed; top: 0; right: -100%; width: 100%; max-width: 440px; height: 100vh; background: var(--glass-bg); backdrop-filter: blur(25px); z-index: 5501; transition: 0.5s; border-left: 1px solid var(--border); display: flex; flex-direction: column; }
+        .cart-drawer.active { right: 0; }
+        .cart-badge { position: absolute; top: -6px; right: -8px; background: var(--gold-muted); color: #fff; font-size: 9px; font-weight: 700; width: 16px; height: 16px; border-radius: 50%; display: flex; align-items: center; justify-content: center; }
+
+        @media (max-width: 1024px) { .desktop-only { display: none !important; } header { height: 75px; } }
+    </style>
+</head>
+<body>
+
+    <div class="cart-overlay" id="cartOverlay" onclick="toggleCart()"></div>
+    <div class="cart-drawer" id="cartDrawer">
+        <div class="flex justify-between p-8 border-b border-[var(--border)]">
+            <h2 class="font-['Playfair_Display'] text-2xl">Кошик</h2>
+            <button onclick="toggleCart()" class="text-3xl opacity-50">×</button>
+        </div>
+        <div class="flex-grow p-8 overflow-y-auto flex flex-col gap-6" id="cartBody"></div>
+        <div class="p-8 border-t border-[var(--border)]">
+            <div class="flex justify-between mb-6">
+                <span>Підсумок:</span>
+                <span class="cart-subtotal-val text-[var(--gold-muted)] font-bold text-xl">0 ₴</span>
+            </div>
+            <button class="w-full bg-[var(--text-main)] text-[var(--bg-body)] py-4 rounded-lg font-bold uppercase tracking-widest">Оформити замовлення</button>
+        </div>
+    </div>
+
+    <header id="header">
+        <div class="flex-1"><a href="index.html" class="text-[10px] uppercase tracking-[3px] opacity-60 hover:opacity-100 hidden lg:block">← На головну</a></div>
+        <a href="index.html" class="bv-logo"><span>BV</span><span>jewelry</span></a>
+        <div class="flex-1 flex justify-end gap-6 items-center">
+            <a href="tel:+380634540901" class="header-phone-link desktop-only">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                <span>+38 063 45 40 901</span>
+            </a>
+            <a href="#" onclick="event.preventDefault(); toggleCart();" class="relative">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4zM3 6h18M16 10a4 4 0 01-8 0"/></svg>
+                <span class="cart-badge">0</span>
+            </a>
+        </div>
+    </header>
+
+    <main class="pt-32 pb-20 px-6 max-w-7xl mx-auto min-h-screen">
+        
+        <div class="text-center mb-12">
+            <h1 class="font-['Playfair_Display'] text-4xl md:text-5xl mb-4 text-[var(--gold-muted)] italic">Каталог</h1>
+            <p class="text-[var(--text-muted)] text-sm max-w-lg mx-auto">Оберіть свій ідеальний виріб серед нашої колекції високого ювелірного мистецтва.</p>
+        </div>
+
+        <div class="flex flex-wrap justify-center gap-3 mb-12" id="filterContainer">
+            <button class="filter-btn active" onclick="filterProducts('all')">Всі вироби</button>
+            <button class="filter-btn" onclick="filterProducts('rings')">Каблучки</button>
+            <button class="filter-btn" onclick="filterProducts('chains')">Ланцюжки</button>
+            <button class="filter-btn" onclick="filterProducts('earrings')">Сережки</button>
+            <button class="filter-btn" onclick="filterProducts('bracelets')">Браслети</button>
+            <button class="filter-btn" onclick="filterProducts('crosses')">Хрестики</button>
+        </div>
+
+        <div id="productGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+            </div>
+
+        <div id="emptyState" class="hidden text-center py-20 text-[var(--text-muted)]">
+            <svg class="w-16 h-16 mx-auto mb-4 opacity-20" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2m8-10V7a4 4 0 0 0-8 0v4m8 0H8"/></svg>
+            <p>У цій категорії поки що немає товарів.</p>
+        </div>
+    </main>
+
+    <footer class="bg-[var(--bg-card)] py-12 px-6 border-t border-[var(--border)] text-center text-[var(--text-muted)] text-xs">
+        <div class="bv-logo !static !transform-none mx-auto mb-4"><span>BV</span><span>jewelry</span></div>
+        <p>© <span id="year"></span> BV Jewelry. Всі права захищено.</p>
+    </footer>
+
+    <script>
+        document.getElementById('year').textContent = new Date().getFullYear();
+
+        // 1. Завантаження товарів з LocalStorage (Адмінки)
+        let allProducts = JSON.parse(localStorage.getItem('bv_products')) || [];
+        const grid = document.getElementById('productGrid');
+        const emptyState = document.getElementById('emptyState');
+        const formatter = new Intl.NumberFormat('uk-UA', { style: 'currency', currency: 'UAH', maximumFractionDigits: 0 });
+
+        function renderCatalog(productsToRender) {
+            grid.innerHTML = '';
+            
+            if (productsToRender.length === 0) {
+                grid.classList.add('hidden');
+                emptyState.classList.remove('hidden');
+                return;
+            }
+
+            grid.classList.remove('hidden');
+            emptyState.classList.add('hidden');
+
+            productsToRender.forEach(prod => {
+                // Визначаємо статус
+                const isOutOfStock = prod.status === 'out-stock';
+                const statusHtml = isOutOfStock 
+                    ? `<div class="absolute top-3 left-3 bg-red-500/80 text-white text-[9px] px-2 py-1 rounded uppercase tracking-wider font-bold z-10 backdrop-blur-sm">Sold Out</div>` 
+                    : '';
+
+                // Ціна (перевіряємо чи є знижка)
+                let priceHtml = `<span class="text-[15px] font-bold text-[var(--gold-muted)]">${formatter.format(prod.price)}</span>`;
+                if (prod.discount && Number(prod.discount) < Number(prod.price)) {
+                    priceHtml = `
+                        <span class="text-[15px] font-bold text-[var(--success)]">${formatter.format(prod.discount)}</span>
+                        <span class="text-[12px] text-[var(--text-muted)] line-through ml-2">${formatter.format(prod.price)}</span>
+                    `;
+                }
+
+                // Елемент картки
+                grid.innerHTML += `
+                    <div class="product-card group relative">
+                        ${statusHtml}
+                        <div class="product-img-wrap">
+                            <img src="${prod.img}" alt="${prod.name}" class="product-img">
+                            ${!isOutOfStock ? `
+                            <button onclick="addToCart('${prod.id}', '${prod.name}', '${prod.variant}', ${prod.discount || prod.price}, '${prod.img}')" class="add-to-cart-btn" title="Додати в кошик">
+                                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 4v16m8-8H4"/></svg>
+                            </button>
+                            ` : ''}
+                        </div>
+                        <div class="p-5 flex flex-col gap-1">
+                            <span class="text-[10px] uppercase tracking-widest text-[var(--text-muted)]">${prod.variant}</span>
+                            <h3 class="text-[15px] font-medium text-[var(--text-main)] leading-snug">${prod.name}</h3>
+                            <div class="mt-2 flex items-center">${priceHtml}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // 2. Логіка Фільтрації
+        function filterProducts(category) {
+            // Оновлюємо активну кнопку
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            if (category === 'all') {
+                renderCatalog(allProducts);
+            } else {
+                const filtered = allProducts.filter(p => p.category === category);
+                renderCatalog(filtered);
+            }
+        }
+
+        // 3. Логіка Кошика
+        let cart = JSON.parse(localStorage.getItem('bv_cart')) || [];
+
+        function addToCart(id, title, variant, price, img) {
+            const existing = cart.find(item => item.id === id);
+            if (existing) existing.qty += 1;
+            else cart.push({ id, title, variant, price, img, qty: 1 });
+            
+            saveAndRenderCart();
+            if (!document.getElementById('cartDrawer').classList.contains('active')) toggleCart();
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            saveAndRenderCart();
+        }
+
+        function saveAndRenderCart() {
+            localStorage.setItem('bv_cart', JSON.stringify(cart));
+            const cartBody = document.getElementById('cartBody');
+            const cartBadges = document.querySelectorAll('.cart-badge');
+            const subtotalVal = document.querySelector('.cart-subtotal-val');
+            let total = 0, totalQty = 0;
+            
+            cartBody.innerHTML = '';
+
+            if (cart.length === 0) {
+                cartBody.innerHTML = `<div class="text-center text-[var(--text-muted)] mt-10">Ваш кошик порожній</div>`;
+                subtotalVal.innerText = formatter.format(0);
+                cartBadges.forEach(b => b.innerText = '0');
+                return;
+            }
+
+            cart.forEach(item => {
+                total += item.price * item.qty;
+                totalQty += item.qty;
+                cartBody.innerHTML += `
+                    <div class="flex gap-4 items-center">
+                        <img src="${item.img}" class="w-20 h-20 object-cover rounded-lg border border-[var(--border)]">
+                        <div class="flex-1 flex flex-col gap-1">
+                            <span class="text-sm font-semibold uppercase tracking-wide">${item.title}</span>
+                            <span class="text-xs text-[var(--text-muted)]">${item.variant}</span>
+                            <span class="text-sm font-bold text-[var(--gold-muted)]">${formatter.format(item.price)} <span class="text-[10px] text-gray-500">x${item.qty}</span></span>
+                        </div>
+                        <button onclick="removeFromCart('${item.id}')" class="text-[var(--text-muted)] hover:text-[var(--danger)] p-2">✕</button>
+                    </div>
+                `;
+            });
+            subtotalVal.innerText = formatter.format(total);
+            cartBadges.forEach(b => b.innerText = totalQty);
+        }
+
+        function toggleCart() {
+            document.getElementById('cartDrawer').classList.toggle('active');
+            document.getElementById('cartOverlay').classList.toggle('active');
+        }
+
+        // 4. Ініціалізація сторінки
+        window.onload = () => {
+            // Застосовуємо налаштування з адмінки (телефон)
+            const settings = JSON.parse(localStorage.getItem('bv_settings'));
+            if (settings && settings.phone) {
+                const phoneLink = document.querySelector('.header-phone-link');
+                if (phoneLink) {
+                    phoneLink.href = `tel:${settings.phone.replace(/\s+/g, '')}`;
+                    phoneLink.querySelector('span').innerText = settings.phone;
+                }
+            }
+            
+            renderCatalog(allProducts);
+            saveAndRenderCart();
+        };
+
+        window.onscroll = () => document.getElementById('header').classList.toggle('scrolled', window.pageYOffset > 50);
+    </script>
+</body>
+</html>
