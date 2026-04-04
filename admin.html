@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="uk" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BV Jewelry | Admin Panel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { dark: '#111111', card: '#1c1c1e', gold: '#c5a059', border: 'rgba(255,255,255,0.08)' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: var(--brand-dark); color: #f5f5f7; }
+        .glass-panel { background: #1c1c1e; border: 1px solid rgba(255,255,255,0.08); border-radius: 16px; }
+        .input-field { width: 100%; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 10px 14px; color: white; outline: none; transition: border-color 0.3s; }
+        .input-field:focus { border-color: #c5a059; }
+        .btn-primary { background: #c5a059; color: #000; font-weight: 600; padding: 10px 20px; border-radius: 8px; transition: opacity 0.3s; cursor: pointer; }
+        .btn-primary:hover { opacity: 0.9; }
+        
+        /* File Upload Styles */
+        .file-upload-wrapper { position: relative; width: 100%; height: 120px; border: 2px dashed rgba(255,255,255,0.2); border-radius: 8px; display: flex; align-items: center; justify-content: center; overflow: hidden; transition: 0.3s; cursor: pointer; }
+        .file-upload-wrapper:hover { border-color: #c5a059; }
+        .file-upload-wrapper input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; z-index: 10; }
+        .file-upload-preview { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: 5; display: none; }
+        .file-upload-text { color: gray; font-size: 12px; z-index: 1; pointer-events: none; text-align: center; }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 4px; }
+    </style>
+</head>
+<body class="bg-[#111111] text-gray-200 h-screen overflow-hidden flex">
+
+    <div id="loginScreen" class="fixed inset-0 bg-[#111111] z-50 flex items-center justify-center transition-opacity duration-500">
+        <div class="glass-panel p-10 w-full max-w-md text-center">
+            <h1 class="text-3xl font-serif mb-2 text-[#c5a059]">BV Admin</h1>
+            <p class="text-gray-500 text-sm mb-8">Введіть дані для доступу</p>
+            <form id="loginForm" class="flex flex-col gap-4 text-left">
+                <div><label class="text-xs uppercase tracking-widest text-gray-400 mb-1 block">Логін</label><input type="text" id="username" class="input-field" required></div>
+                <div><label class="text-xs uppercase tracking-widest text-gray-400 mb-1 block">Пароль</label><input type="password" id="password" class="input-field" required></div>
+                <button type="submit" class="btn-primary w-full mt-4">Увійти</button>
+            </form>
+        </div>
+    </div>
+
+    <aside id="sidebar" class="w-64 glass-panel m-4 flex flex-col hidden h-[calc(100vh-32px)]">
+        <div class="p-6 border-b border-white/10 text-center">
+            <h2 class="text-xl font-serif text-[#c5a059]">BV Jewelry</h2>
+            <p class="text-xs text-gray-500 uppercase tracking-widest mt-1">Control Panel</p>
+        </div>
+        <nav class="flex-1 p-4 flex flex-col gap-2">
+            <button onclick="switchTab('products')" id="tab-products" class="tab-btn w-full text-left px-4 py-3 rounded-lg bg-white/5 text-[#c5a059] font-medium transition">Товари</button>
+            <button onclick="switchTab('categories-list')" id="tab-categories-list" class="tab-btn w-full text-left px-4 py-3 rounded-lg hover:bg-white/5 transition text-gray-400">Список категорій</button>
+            <button onclick="switchTab('categories-home')" id="tab-categories-home" class="tab-btn w-full text-left px-4 py-3 rounded-lg hover:bg-white/5 transition text-gray-400">Категорії (Головна)</button>
+            <button onclick="switchTab('settings')" id="tab-settings" class="tab-btn w-full text-left px-4 py-3 rounded-lg hover:bg-white/5 transition text-gray-400">Налаштування сайту</button>
+        </nav>
+        <div class="p-4 border-t border-white/10">
+            <button onclick="logout()" class="w-full text-left px-4 py-2 text-sm text-gray-400 hover:text-white transition">← Вийти</button>
+            <a href="index.html" target="_blank" class="block w-full text-left px-4 py-2 text-sm text-gray-400 hover:text-[#c5a059] transition">Перейти на сайт ↗</a>
+        </div>
+    </aside>
+
+    <main id="mainContent" class="flex-1 p-4 hidden h-screen overflow-y-auto">
+        
+        <section id="content-products" class="tab-content h-full">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold">Управління товарами</h2>
+                <button onclick="openProductModal()" class="btn-primary">+ Додати товар</button>
+            </div>
+            <div class="glass-panel overflow-hidden">
+                <table class="w-full text-left text-sm">
+                    <thead class="bg-white/5 border-b border-white/10 uppercase text-xs text-gray-400 tracking-wider">
+                        <tr><th class="p-4">Фото</th><th class="p-4">Назва</th><th class="p-4">Категорія</th><th class="p-4">Ціна</th><th class="p-4">Статус</th><th class="p-4">Дії</th></tr>
+                    </thead>
+                    <tbody id="productsTableBody" class="divide-y divide-white/10"></tbody>
+                </table>
+            </div>
+        </section>
+
+        <section id="content-categories-list" class="tab-content hidden h-full">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-semibold">Список категорій</h2>
+                <button onclick="openCategoryModal()" class="btn-primary">+ Додати категорію</button>
+            </div>
+            <div class="glass-panel p-6">
+                <p class="text-sm text-gray-400 mb-6">Створюйте нові категорії, до яких потім можна прив'язувати товари.</p>
+                <div class="overflow-hidden border border-white/10 rounded-lg">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-white/5 border-b border-white/10 uppercase text-xs text-gray-400">
+                            <tr><th class="p-4 w-1/3">ID (Англ)</th><th class="p-4">Назва (Укр)</th><th class="p-4 text-right">Дії</th></tr>
+                        </thead>
+                        <tbody id="categoriesTableBody" class="divide-y divide-white/10"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="content-categories-home" class="tab-content hidden h-full">
+            <h2 class="text-2xl font-semibold mb-6">Блок колажу на головній</h2>
+            <div class="glass-panel p-6">
+                <p class="text-sm text-gray-400 mb-6">Завантажте фотографії для кожної категорії, яка відображається у колажі на головній сторінці.</p>
+                <div id="homeCategoriesList" class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    </div>
+                <button onclick="saveHomeCategories()" class="btn-primary mt-6">Зберегти фото колажу</button>
+            </div>
+        </section>
+
+        <section id="content-settings" class="tab-content hidden h-full">
+            <h2 class="text-2xl font-semibold mb-6">Налаштування сайту</h2>
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="glass-panel p-6">
+                    <h3 class="text-lg text-[#c5a059] mb-4">Контакти та Соцмережі</h3>
+                    <div class="flex flex-col gap-4">
+                        <div><label class="text-xs text-gray-400">Телефон</label><input type="text" id="set-phone" class="input-field mt-1"></div>
+                        <div><label class="text-xs text-gray-400">Telegram Link</label><input type="text" id="set-tg" class="input-field mt-1"></div>
+                        <div><label class="text-xs text-gray-400">Instagram Link</label><input type="text" id="set-inst" class="input-field mt-1"></div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6">
+                    <h3 class="text-lg text-[#c5a059] mb-4">Локації</h3>
+                    <div class="flex flex-col gap-4">
+                        <div><label class="text-xs text-gray-400">Адреса 1</label><input type="text" id="set-addr1" class="input-field mt-1"></div>
+                        <div><label class="text-xs text-gray-400">Посилання Google Maps (Адр. 1)</label><input type="text" id="set-map1" class="input-field mt-1"></div>
+                        <hr class="border-white/10 my-2">
+                        <div><label class="text-xs text-gray-400">Адреса 2</label><input type="text" id="set-addr2" class="input-field mt-1"></div>
+                        <div><label class="text-xs text-gray-400">Посилання Google Maps (Адр. 2)</label><input type="text" id="set-map2" class="input-field mt-1"></div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-6 lg:col-span-2">
+                    <h3 class="text-lg text-[#c5a059] mb-4">Фон шапки (Hero)</h3>
+                    <div class="file-upload-wrapper" id="heroUploadWrapper">
+                        <input type="file" accept="image/*" onchange="handleImageUpload(event, 'heroPreview', 'set-hero')">
+                        <img id="heroPreview" class="file-upload-preview">
+                        <div class="file-upload-text">Натисніть щоб вибрати фото для фону (або перетягніть)</div>
+                    </div>
+                    <input type="hidden" id="set-hero">
+                </div>
+            </div>
+            <div class="mt-6 flex justify-end">
+                <button onclick="saveSiteSettings()" class="btn-primary">Зберегти налаштування</button>
+            </div>
+        </section>
+
+    </main>
+
+    <div id="productModal" class="fixed inset-0 bg-black/80 z-[60] flex items-center justify-center hidden opacity-0 transition-opacity">
+        <div class="glass-panel p-8 w-full max-w-2xl max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold" id="prodModalTitle">Додати новий товар</h3>
+                <button onclick="closeProductModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            
+            <form id="productForm" class="flex flex-col gap-4">
+                <input type="hidden" id="prod-id">
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-xs text-gray-400">Назва</label><input type="text" id="prod-name" class="input-field mt-1" required></div>
+                    <div><label class="text-xs text-gray-400">Артикул / Метал</label><input type="text" id="prod-variant" class="input-field mt-1" required></div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="text-xs text-gray-400">Категорія</label>
+                        <select id="prod-category" class="input-field mt-1" required>
+                            </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-400">Статус</label>
+                        <select id="prod-status" class="input-field mt-1">
+                            <option value="in-stock">В наявності</option>
+                            <option value="out-stock">Немає в наявності</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div><label class="text-xs text-gray-400">Ціна (ГРН)</label><input type="number" id="prod-price" class="input-field mt-1" required></div>
+                    <div><label class="text-xs text-gray-400">Знижка (ГРН)</label><input type="number" id="prod-discount" class="input-field mt-1"></div>
+                </div>
+                
+                <div>
+                    <label class="text-xs text-gray-400 mb-1 block">Фото товару</label>
+                    <div class="file-upload-wrapper" id="prodUploadWrapper">
+                        <input type="file" accept="image/*" onchange="handleImageUpload(event, 'prodPreview', 'prod-imgBase64')">
+                        <img id="prodPreview" class="file-upload-preview">
+                        <div class="file-upload-text">Завантажити фото з комп'ютера</div>
+                    </div>
+                    <input type="hidden" id="prod-imgBase64" required>
+                </div>
+                
+                <div><label class="text-xs text-gray-400">Опис</label><textarea id="prod-desc" class="input-field mt-1 h-24 resize-none"></textarea></div>
+                
+                <div class="flex justify-end gap-3 mt-4">
+                    <button type="button" onclick="closeProductModal()" class="px-4 py-2 rounded-lg border border-white/10 text-gray-300 hover:bg-white/5">Скасувати</button>
+                    <button type="submit" class="btn-primary">Зберегти товар</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div id="categoryModal" class="fixed inset-0 bg-black/80 z-[60] flex items-center justify-center hidden opacity-0 transition-opacity">
+        <div class="glass-panel p-8 w-full max-w-sm">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-semibold" id="catModalTitle">Додати категорію</h3>
+                <button onclick="closeCategoryModal()" class="text-gray-400 hover:text-white text-2xl">&times;</button>
+            </div>
+            <form id="categoryForm" class="flex flex-col gap-4">
+                <input type="hidden" id="cat-old-id">
+                <div>
+                    <label class="text-xs text-gray-400">Ідентифікатор (англ., без пробілів, напр. 'rings')</label>
+                    <input type="text" id="cat-id" class="input-field mt-1" required pattern="[a-zA-Z0-9_-]+">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-400">Назва (напр. 'Каблучки')</label>
+                    <input type="text" id="cat-name" class="input-field mt-1" required>
+                </div>
+                <div class="flex justify-end gap-3 mt-4">
+                    <button type="button" onclick="closeCategoryModal()" class="px-4 py-2 rounded-lg border border-white/10 text-gray-300">Скасувати</button>
+                    <button type="submit" class="btn-primary">Зберегти</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // --- ДАНІ ---
+        // Базові категорії, якщо список пустий
+        const defaultCategories = [
+            { id: 'chains', name: 'Ланцюжки' }, { id: 'rings', name: 'Каблучки' },
+            { id: 'earrings', name: 'Сережки' }, { id: 'bracelets', name: 'Браслети' },
+            { id: 'crosses', name: 'Хрестики' }, { id: 'wedding', name: 'Обручки' }
+        ];
+
+        let categories = JSON.parse(localStorage.getItem('bv_categories_list')) || defaultCategories;
+        let products = JSON.parse(localStorage.getItem('bv_products')) || [];
+        let siteSettings = JSON.parse(localStorage.getItem('bv_settings')) || {
+            phone: '+38 063 45 40 901', tgLink: '', instLink: '',
+            addr1: 'м. Ізмаїл, вул. Торгова, 68', map1: '', addr2: 'м. Ізмаїл, вул. Покровська, 57', map2: '', heroBg: ''
+        };
+        let homeImgs = JSON.parse(localStorage.getItem('bv_home_imgs')) || {};
+
+        // --- АВТОРИЗАЦІЯ ТА НАВІГАЦІЯ ---
+        if (sessionStorage.getItem('isAdminAuth') === 'true') showDashboard();
+
+        document.getElementById('loginForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+            if (document.getElementById('username').value === 'admin' && document.getElementById('password').value === 'admin') {
+                sessionStorage.setItem('isAdminAuth', 'true');
+                showDashboard();
+            } else alert('Невірні дані');
+        });
+
+        function showDashboard() {
+            document.getElementById('loginScreen').classList.add('hidden');
+            document.getElementById('sidebar').classList.remove('hidden');
+            document.getElementById('mainContent').classList.remove('hidden');
+            loadAllData();
+        }
+
+        function logout() { sessionStorage.removeItem('isAdminAuth'); location.reload(); }
+
+        function switchTab(tabName) {
+            document.querySelectorAll('.tab-btn').forEach(btn => { btn.classList.remove('bg-white/5', 'text-[#c5a059]'); btn.classList.add('text-gray-400'); });
+            document.querySelectorAll('.tab-content').forEach(content => content.classList.add('hidden'));
+            document.getElementById('tab-' + tabName).classList.add('bg-white/5', 'text-[#c5a059]');
+            document.getElementById('tab-' + tabName).classList.remove('text-gray-400');
+            document.getElementById('content-' + tabName).classList.remove('hidden');
+        }
+
+        function loadAllData() {
+            renderCategoriesList();
+            renderProducts();
+            populateCategorySelects();
+            populateHomeCategories();
+            populateSettings();
+        }
+
+        // --- ФУНКЦІЯ ЗАВАНТАЖЕННЯ ФОТО (Base64) ---
+        function handleImageUpload(event, previewId, inputId) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // Перевірка розміру (не більше 2MB щоб не переповнити localStorage)
+            if (file.size > 2 * 1024 * 1024) {
+                alert("Файл занадто великий! Виберіть фото до 2 MB.");
+                event.target.value = '';
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64String = e.target.result;
+                document.getElementById(inputId).value = base64String;
+                
+                const previewImg = document.getElementById(previewId);
+                previewImg.src = base64String;
+                previewImg.style.display = 'block';
+            };
+            reader.readAsDataURL(file);
+        }
+
+
+        // --- СПИСОК КАТЕГОРІЙ ---
+        function renderCategoriesList() {
+            const tbody = document.getElementById('categoriesTableBody');
+            tbody.innerHTML = '';
+            categories.forEach(c => {
+                tbody.innerHTML += `
+                    <tr>
+                        <td class="p-4 text-gray-400">${c.id}</td>
+                        <td class="p-4 font-medium">${c.name}</td>
+                        <td class="p-4 text-right">
+                            <button onclick="editCategory('${c.id}')" class="text-blue-400 hover:text-blue-300 mr-3">Ред.</button>
+                            <button onclick="deleteCategory('${c.id}')" class="text-red-500 hover:text-red-400">Видал.</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        const catModal = document.getElementById('categoryModal');
+        function openCategoryModal(id = null) {
+            document.getElementById('categoryForm').reset();
+            document.getElementById('cat-old-id').value = '';
+            document.getElementById('catModalTitle').innerText = 'Додати категорію';
+            if (id) {
+                const c = categories.find(cat => cat.id === id);
+                document.getElementById('cat-old-id').value = c.id;
+                document.getElementById('cat-id').value = c.id;
+                document.getElementById('cat-name').value = c.name;
+                document.getElementById('catModalTitle').innerText = 'Редагувати категорію';
+            }
+            catModal.classList.remove('hidden');
+            setTimeout(() => catModal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeCategoryModal() { catModal.classList.add('opacity-0'); setTimeout(() => catModal.classList.add('hidden'), 300); }
+
+        document.getElementById('categoryForm').onsubmit = (e) => {
+            e.preventDefault();
+            const oldId = document.getElementById('cat-old-id').value;
+            const newId = document.getElementById('cat-id').value.toLowerCase();
+            const name = document.getElementById('cat-name').value;
+
+            if (oldId) {
+                const index = categories.findIndex(c => c.id === oldId);
+                categories[index] = { id: newId, name };
+            } else {
+                if(categories.find(c => c.id === newId)) return alert('Категорія з таким ID вже існує!');
+                categories.push({ id: newId, name });
+            }
+            
+            localStorage.setItem('bv_categories_list', JSON.stringify(categories));
+            loadAllData();
+            closeCategoryModal();
+        };
+
+        function deleteCategory(id) {
+            if(confirm('Видалити цю категорію? Товари з цією категорією залишаться без прив\'язки.')) {
+                categories = categories.filter(c => c.id !== id);
+                localStorage.setItem('bv_categories_list', JSON.stringify(categories));
+                loadAllData();
+            }
+        }
+
+
+        // --- ТОВАРИ ---
+        function populateCategorySelects() {
+            const select = document.getElementById('prod-category');
+            select.innerHTML = '';
+            categories.forEach(c => select.innerHTML += `<option value="${c.id}">${c.name}</option>`);
+        }
+
+        function renderProducts() {
+            const tbody = document.getElementById('productsTableBody');
+            tbody.innerHTML = '';
+            if(products.length === 0) return tbody.innerHTML = '<tr><td colspan="6" class="p-4 text-center">Товарів ще немає.</td></tr>';
+            
+            products.forEach(p => {
+                const catObj = categories.find(c => c.id === p.category);
+                const catName = catObj ? catObj.name : p.category;
+                
+                tbody.innerHTML += `
+                    <tr class="hover:bg-white/5 transition">
+                        <td class="p-4"><img src="${p.img}" class="w-12 h-12 object-cover rounded"></td>
+                        <td class="p-4 font-medium">${p.name} <br><span class="text-xs text-gray-500">${p.variant}</span></td>
+                        <td class="p-4 text-gray-400 text-xs">${catName}</td>
+                        <td class="p-4 text-[#c5a059]">${p.price} ₴ ${p.discount ? `<span class="text-red-400 line-through ml-1">${p.discount}</span>` : ''}</td>
+                        <td class="p-4 ${p.status === 'in-stock' ? 'text-green-500' : 'text-red-500'} text-xs font-semibold">${p.status === 'in-stock' ? 'Є' : 'Немає'}</td>
+                        <td class="p-4">
+                            <button onclick="editProduct('${p.id}')" class="text-blue-400 mr-3">Ред.</button>
+                            <button onclick="deleteProduct('${p.id}')" class="text-red-500">Видал.</button>
+                        </td>
+                    </tr>
+                `;
+            });
+        }
+
+        const prodModal = document.getElementById('productModal');
+        function openProductModal(id = null) {
+            document.getElementById('productForm').reset();
+            document.getElementById('prodPreview').style.display = 'none';
+            document.getElementById('prod-id').value = '';
+            document.getElementById('prodModalTitle').innerText = 'Додати товар';
+            
+            if(id) {
+                const p = products.find(prod => prod.id === id);
+                document.getElementById('prod-id').value = p.id;
+                document.getElementById('prod-name').value = p.name;
+                document.getElementById('prod-variant').value = p.variant;
+                document.getElementById('prod-category').value = p.category;
+                document.getElementById('prod-status').value = p.status;
+                document.getElementById('prod-price').value = p.price;
+                document.getElementById('prod-discount').value = p.discount || '';
+                document.getElementById('prod-imgBase64').value = p.img;
+                document.getElementById('prodPreview').src = p.img;
+                document.getElementById('prodPreview').style.display = 'block';
+                document.getElementById('prod-desc').value = p.desc || '';
+                document.getElementById('prodModalTitle').innerText = 'Редагувати товар';
+            }
+            prodModal.classList.remove('hidden');
+            setTimeout(() => prodModal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeProductModal() { prodModal.classList.add('opacity-0'); setTimeout(() => prodModal.classList.add('hidden'), 300); }
+
+        document.getElementById('productForm').onsubmit = (e) => {
+            e.preventDefault();
+            const idInput = document.getElementById('prod-id').value;
+            const imgData = document.getElementById('prod-imgBase64').value;
+            
+            if(!imgData) return alert('Будь ласка, завантажте фото!');
+
+            const prodData = {
+                id: idInput || 'prod_' + Date.now(),
+                name: document.getElementById('prod-name').value,
+                variant: document.getElementById('prod-variant').value,
+                category: document.getElementById('prod-category').value,
+                status: document.getElementById('prod-status').value,
+                price: document.getElementById('prod-price').value,
+                discount: document.getElementById('prod-discount').value,
+                img: imgData,
+                desc: document.getElementById('prod-desc').value
+            };
+
+            if (idInput) { const index = products.findIndex(p => p.id === idInput); products[index] = prodData; } 
+            else { products.push(prodData); }
+
+            localStorage.setItem('bv_products', JSON.stringify(products));
+            renderProducts();
+            closeProductModal();
+        };
+
+        function deleteProduct(id) { if(confirm('Видалити?')) { products = products.filter(p => p.id !== id); localStorage.setItem('bv_products', JSON.stringify(products)); renderProducts(); } }
+
+        // --- КАТЕГОРІЇ ДЛЯ ГОЛОВНОЇ СТОРІНКИ (ФОТО) ---
+        function populateHomeCategories() {
+            const list = document.getElementById('homeCategoriesList');
+            list.innerHTML = '';
+            
+            categories.forEach(c => {
+                const imgData = homeImgs[c.id] || '';
+                list.innerHTML += `
+                    <div class="bg-white/5 p-4 rounded-lg border border-white/10 flex items-center gap-4">
+                        <div class="relative w-20 h-20 bg-black rounded border border-white/20 overflow-hidden shrink-0 flex items-center justify-center">
+                            <input type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer z-10" onchange="handleImageUpload(event, 'preview-home-${c.id}', 'input-home-${c.id}')">
+                            <img id="preview-home-${c.id}" src="${imgData}" class="absolute inset-0 w-full h-full object-cover z-0" style="display: ${imgData ? 'block' : 'none'};">
+                            <span class="text-[9px] text-gray-500 z-0">Фото</span>
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-sm text-[#c5a059] font-medium block mb-1">${c.name}</label>
+                            <span class="text-[10px] text-gray-500 uppercase tracking-widest block mb-2">Натисніть на квадрат зліва, щоб змінити</span>
+                            <input type="hidden" id="input-home-${c.id}" value="${imgData}">
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        function saveHomeCategories() {
+            categories.forEach(c => {
+                homeImgs[c.id] = document.getElementById(`input-home-${c.id}`).value;
+            });
+            localStorage.setItem('bv_home_imgs', JSON.stringify(homeImgs));
+            alert('Фотографії категорій для головної збережено!');
+        }
+
+        // --- НАЛАШТУВАННЯ САЙТУ ---
+        function populateSettings() {
+            document.getElementById('set-phone').value = siteSettings.phone || '';
+            document.getElementById('set-tg').value = siteSettings.tgLink || '';
+            document.getElementById('set-inst').value = siteSettings.instLink || '';
+            document.getElementById('set-addr1').value = siteSettings.addr1 || '';
+            document.getElementById('set-map1').value = siteSettings.map1 || '';
+            document.getElementById('set-addr2').value = siteSettings.addr2 || '';
+            document.getElementById('set-map2').value = siteSettings.map2 || '';
+            
+            document.getElementById('set-hero').value = siteSettings.heroBg || '';
+            if(siteSettings.heroBg) {
+                document.getElementById('heroPreview').src = siteSettings.heroBg;
+                document.getElementById('heroPreview').style.display = 'block';
+            }
+        }
+
+        function saveSiteSettings() {
+            siteSettings = {
+                phone: document.getElementById('set-phone').value,
+                tgLink: document.getElementById('set-tg').value,
+                instLink: document.getElementById('set-inst').value,
+                addr1: document.getElementById('set-addr1').value,
+                map1: document.getElementById('set-map1').value,
+                addr2: document.getElementById('set-addr2').value,
+                map2: document.getElementById('set-map2').value,
+                heroBg: document.getElementById('set-hero').value
+            };
+            localStorage.setItem('bv_settings', JSON.stringify(siteSettings));
+            alert('Загальні налаштування збережено!');
+        }
+    </script>
+</body>
+</html>
