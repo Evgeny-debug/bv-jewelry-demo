@@ -1,0 +1,133 @@
+ <header id="header">
+        
+        <div class="header-left">
+            <div class="burger" id="burger"><span></span><span></span><span></span></div>
+            
+            <nav class="nav-left">
+                <a href="index.html" data-i18n="m1">Головна</a>
+                
+                <div class="catalog-dropdown-wrapper group">
+                    <span class="catalog-toggle flex items-center gap-1" data-i18n="m2">
+                        Каталог 
+                        <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:rotate-180 transition-transform"><path d="M6 9l6 6 6-6"/></svg>
+                    </span>
+                    
+                    <div class="mega-menu">
+                        <div class="mega-col-1">
+                            <div class="mega-cat-item active" data-target="mc-chains" data-img="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=600" data-title="Золотий ланцюг класичний" data-price="45000" data-status="in-stock">
+                                <svg class="mega-cat-icon" viewBox="0 0 24 24"><path d="M13.73 21a2 2 0 0 1-3.46 0"/><path d="M18.63 13A17.89 17.89 0 0 1 18 8"/><path d="M6.26 6.26A5.86 5.86 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M18 8a6 6 0 0 0-9.33-5"/></svg>
+                                <span data-i18n="mc1">Золоті ланцюжки</span>
+                            </div>
+                            <div class="mega-cat-item" data-target="mc-rings" data-img="https://images.unsplash.com/photo-1605100804763-247f67b3557e?q=80&w=600" data-title="Каблучка Солітер" data-price="125000" data-status="in-stock">
+                                <svg class="mega-cat-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><path d="M12 4v4"/></svg>
+                                <span data-i18n="mc4">Каблучки</span>
+                            </div>
+                            <div class="mega-cat-item" data-target="mc-earrings" data-img="https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?q=80&w=600" data-title="Сережки пусети" data-price="34000" data-status="in-stock">
+                                <svg class="mega-cat-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/></svg>
+                                <span data-i18n="mc5">Сережки</span>
+                            </div>
+
+                            <a href="#order-form" class="mega-atelier-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7-7-7M5 12h14"/></svg>
+                                <span data-i18n="m_atelier">Замовити ексклюзив</span>
+                            </a>
+                        </div>
+
+                        <div class="mega-col-2 active" id="mc-chains">
+                            <a href="#" class="sub-cat-link">Ланцюжки для дітей</a>
+                            <a href="#" class="sub-cat-link">Жіночі ланцюжки</a>
+                            <a href="#" class="sub-cat-link">Чоловічі ланцюги</a>
+                            <a href="#" class="view-all-link">Усі товари →</a>
+                        </div>
+                        <div class="mega-col-2" id="mc-rings">
+                            <a href="#" class="sub-cat-link">Каблучки для заручин</a>
+                            <a href="#" class="sub-cat-link">Обручки</a>
+                            <a href="#" class="sub-cat-link">Каблучки з діамантами</a>
+                            <a href="#" class="view-all-link">Усі товари →</a>
+                        </div>
+                        <div class="mega-col-2" id="mc-earrings">
+                            <a href="#" class="sub-cat-link">Сережки-пусети</a>
+                            <a href="#" class="sub-cat-link">Довгі сережки</a>
+                            <a href="#" class="view-all-link">Усі товари →</a>
+                        </div>
+
+                        <div class="mega-col-3">
+                            <a href="#" class="preview-card" id="megaPreviewCard">
+                                <div class="preview-img-wrap">
+                                    <img src="https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?q=80&w=600" id="megaPreviewImg" alt="Preview">
+                                    <div class="card-actions">
+                                        <button class="action-btn" title="Add to Cart" onclick="event.preventDefault(); addToCart('preview_item', document.getElementById('megaPreviewTitle').innerText, 'Золото 585', parseInt(document.getElementById('megaPreviewPrice').getAttribute('data-raw-price')), document.getElementById('megaPreviewImg').src)">
+                                            <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="preview-info">
+                                    <span class="status-label in-stock" id="megaPreviewStatus">В наявності</span>
+                                    <span class="preview-title" id="megaPreviewTitle">Золотий ланцюг класичний</span>
+                                    <div class="preview-price-wrap">
+                                        <span class="price-current" id="megaPreviewPrice" data-raw-price="45000">45 000 ₴</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <a href="#order-form" class="btn-order" data-i18n="m_atelier">Замовити ексклюзив</a>
+            </nav>
+
+            <div class="search-box desktop-only">
+                <input type="text" class="search-input" data-i18n-placeholder="search_ph" placeholder="Пошук...">
+                <svg class="search-icon" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+            
+            <div class="search-box mobile-search" style="display: none;" onclick="document.querySelector('.mob-search-input').focus()">
+                <svg viewBox="0 0 24 24" style="width: 20px; height: 20px; stroke: var(--text-main); fill: none; opacity: 0.8;"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            </div>
+        </div>
+
+        <a href="index.html" class="bv-logo">
+            <span>BV</span><span>jewelry</span>
+        </a>
+
+        <div class="header-right">
+            <a href="tel:+380634540901" class="header-phone-link desktop-only" style="white-space: nowrap;">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
+                </svg>
+                <span>+38 063 45 40 901</span>
+            </a>
+
+            <div id="themeToggle" class="icon-btn desktop-only">
+                <svg id="themeIcon" viewBox="0 0 24 24">
+                    <circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+            </div>
+
+            <div class="dropdown-wrapper lang-dropdown desktop-only">
+                <div class="lang-current">
+                    <img src="https://flagcdn.com/ua.svg" class="flag" id="currentFlag">
+                    <span id="currentLangLabel">UA</span>
+                </div>
+                <div class="dropdown-menu">
+                    <div class="dropdown-item" onclick="changeLang('uk')"><img src="https://flagcdn.com/ua.svg" class="flag"> UA</div>
+                    <div class="dropdown-item" onclick="changeLang('en')"><img src="https://flagcdn.com/gb.svg" class="flag"> EN</div>
+                    <div class="dropdown-item" onclick="changeLang('ru')"><img src="https://flagcdn.com/ru.svg" class="flag"> RU</div>
+                </div>
+            </div>
+
+            <div class="dropdown-wrapper desktop-only">
+                <div class="icon-btn">
+                    <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                </div>
+                <div class="dropdown-menu">
+                    <a href="#login" class="dropdown-item" data-i18n="login">Увійти</a>
+                    <a href="#register" class="dropdown-item" data-i18n="register">Зареєструватися</a>
+                </div>
+            </div>
+
+            <a href="#" onclick="event.preventDefault(); toggleCart();" class="icon-btn">
+                <svg viewBox="0 0 24 24"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                <span class="cart-badge">0</span>
+            </a>
+        </div>
